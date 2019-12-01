@@ -1,0 +1,22 @@
+.container {
+    display:grid;
+    grid-template-columns: 1fr;
+    grid-gap: 10px;
+}
+
+.student{
+    padding: 20px;
+    background: rgb(50,20,100);
+    color: white;
+}
+
+.studentname {
+    font-weight: bold;
+    font-size: large;
+}
+
+.student-container {
+    display:grid;
+    grid-template-columns: 1fr 4fr 4fr 1fr;
+    grid-gap: 10px;
+}

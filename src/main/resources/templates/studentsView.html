@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{../css/student.css}" type="text/css"/>
+    <link href="/webjars/bootstrap/4.3.1/css/bootstrap.css" rel="stylesheet"/>
+    <script type="text/javascript" src="/webjars/jquery/3.4.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/webjars/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../static/main.js" th:src="@{/main.js}"></script>
+
+    <title>Student App</title>
+</head>
+<body>
+
+<div th:switch="${data.content}">
+    <h1 th:case="null">No Students!!! Please create some</h1>
+    <div th:case="*">
+        <h1> List of Students:</h1>
+        <div class="container">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addModal">Add New</button>
+            <div class="student" th:each="student:${data.content}">
+                <div class="student-container">
+                    <div th:text="${student.id}"></div>
+                    <div class="studentname" th:text="${student.name}"></div>
+                    <div th:text="${student.department}"></div>
+                    <div>
+                        <a th:href="@{/students/get/(id=${student.id})}" class="btn btn-warning">Edit</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<hr/>
+<ul class="nav nav-pills">
+    <li class="nav-item"
+        th:each="i : ${#numbers.sequence(0, data.totalPages-1)}">
+        <a th:href="@{/students/getAll/(pageNo=${i}, pageSize=1)}" th:text=" ${i}" class="nav-link"
+           th:classappend="${currentPage} == ${i}?'active':''"></a>
+    </li>
+</ul>
+</body>
+</html>

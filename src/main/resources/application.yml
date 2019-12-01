@@ -1,0 +1,32 @@
+# Spring Boot configuration
+spring:
+  # Server configuration
+  server:
+    port: 8080
+    sessionTimeout: 30
+  output:
+    ansi:
+      enabled: ALWAYS
+
+  # Database
+  datasource:
+    initialization-mode: always
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: root
+
+  # JPA properties
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+  # Logging
+logging:
+  level:
+    root: INFO
+    org.springframework.web: ERROR
+    com.example: DEBUG
+    org.hibernate: ERROR

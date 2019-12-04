@@ -1,22 +1,25 @@
-<!doctype html>
+<!DOCTYPE html>
 
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns="http://www.w3.org/1999/xhtml"
       layout:decorate="~{fragments/mainLayout}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>GIMP</title>
 </head>
 <body>
-<div layout:fragment="content" class="container mySpace">
-<div class="jumbotron">
-    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam, aspernatur aut corporis enim officiis soluta
-        velit. Aperiam consequatur eligendi enim incidunt, necessitatibus nihil pariatur perferendis qui quo ratione sit
-        voluptates?</p>
+<div layout:fragement="header"></div>
+<div layout:fragment="content">
+    <div class="container mySpace">
+        <div class="jumbotron">
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam, aspernatur aut corporis enim officiis
+                soluta
+                velit. Aperiam consequatur eligendi enim incidunt, necessitatibus nihil pariatur perferendis qui quo
+                ratione
+                sit
+                voluptates?</p>
+        </div>
+    </div>
 </div>
-</div>
+<div layout:fragment="footer"></div>
 </body>
 </html>

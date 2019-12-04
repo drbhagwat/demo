@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <link rel="stylesheet" type="text/css" href="../../static/css/style.css"
+          th:href="@{css/style.css}"/>
+
+    <link rel="stylesheet" type="text/css" href="../../static/css/materia/bootstrap.min.css"
+          th:href="@{css/materia/bootstrap.min.css}"/>
+
+    <script type="text/javascript" src="/webjars/jquery/3.4.1/jquery.min.js"></script>
+
+    <script type="text/javascript" src="/webjars/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+<div th:replace="fragments/header::header"></div>
+
+<div class="container mySpace">
+    <div class="jumbotron">
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam, aspernatur aut corporis enim officiis
+            soluta
+            velit. Aperiam consequatur eligendi enim incidunt, necessitatibus nihil pariatur perferendis qui quo ratione
+            sit
+            voluptates?</p>
+    </div>
+</div>
+
+<div th:replace="fragments/footer::footer"></div>
+</body>
+</html>

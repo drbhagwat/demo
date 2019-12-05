@@ -1,5 +1,7 @@
 # Spring Boot configuration
 spring:
+  thymeleaf:
+    cache: false
   # Server configuration
   server:
     port: 8080

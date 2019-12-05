@@ -1,9 +1,3 @@
-.container {
-    display:grid;
-    grid-template-columns: 1fr;
-    grid-gap: 10px;
-}
-
 .student{
     padding: 20px;
     background: rgb(50,20,100);

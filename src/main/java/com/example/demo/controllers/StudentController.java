@@ -30,7 +30,7 @@ public class StudentController {
             model.addAttribute("data", studentService.getAll(pageNo, pageSize));
             model.addAttribute("currentPage", pageNo);
         }
-        return "redirect:/home";
+        return "studentsView";
     }
 
     @RequestMapping("/get")

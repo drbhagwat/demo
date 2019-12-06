@@ -34,7 +34,8 @@
         <hr>
         <ul class="nav nav-pills">
           <li class="nav-item" th:each="i : ${#numbers.sequence(0, data.totalPages-1)}">
-            <a th:href="@{/students/getAll/(pageNo=${i})}" th:text="${i}" class="nav-link"></a>
+            <a th:href="@{/students/getAll/(pageNo=${i})}" th:text="${i}" class="nav-link"
+            th:classappend="${currentPage} == ${i} ? 'active' : ''"></a>
           </li>
         </ul>
       </div>

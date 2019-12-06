@@ -3,9 +3,12 @@
   padding:0;
 }
 
+.container {
+  padding: 0px;
+}
+
 .background-image {
   height:100%;
-  width: 100%;
   background: url(../images/background.jpg);
   background-size: cover;
   background-position: center center;
@@ -19,7 +22,7 @@
   position: fixed;
   bottom: 0;
   font-size: 16px;
-  background: white;
+  background: #2196F3 !important;
   width: 100%;
   padding-top:10px
 }

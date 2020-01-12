@@ -1,13 +1,38 @@
 package com.example.demo;
 
-import nz.net.ultraq.thymeleaf.LayoutDialect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
-import org.thymeleaf.spring5.SpringTemplateEngine;
-import org.thymeleaf.templateresolver.UrlTemplateResolver;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.stereotype.Component;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+
+@Component
+class DataSetup implements ApplicationRunner {
+  @Bean
+  public MessageSource messageSource() {
+    ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
+    messageSource.setBasename("classpath:messages");
+    messageSource.setDefaultEncoding("UTF-8");
+    return messageSource;
+  }
+
+  @Bean
+  public LocalValidatorFactoryBean getValidator(MessageSource messageSource) {
+    LocalValidatorFactoryBean bean = new LocalValidatorFactoryBean();
+    bean.setValidationMessageSource(messageSource);
+    return bean;
+  }
+
+  @Override
+  public void run(ApplicationArguments args) {
+  }
+}
 
 @SpringBootApplication
 public class DemoApplication {

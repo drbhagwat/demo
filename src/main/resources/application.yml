@@ -12,7 +12,7 @@ spring:
 
   # Database
   datasource:
-    initialization-mode: always
+    initialization-mode: never
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres
     username: postgres
@@ -21,7 +21,7 @@ spring:
   # JPA properties
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     show-sql: true
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 
@@ -32,3 +32,20 @@ logging:
     org.springframework.web: ERROR
     com.example: DEBUG
     org.hibernate: ERROR
+
+
+# following constants are for validation of various Json inputs and Exception handling.
+VALIDATION_FAILED: Validation Failed
+GIV_EXCEPTION: Giv Exception
+ALPHA_NUMERIC_REGEX: ^[ a-zA-Z0-9]*$
+
+
+# following messages are for the core classes.
+CODE_MAX_LENGTH: 10
+COMPANY_CODE_MAX_LENGTH: 10
+DIVISION_CODE_MAX_LENGTH: 10
+WAREHOUSE_CODE_MAX_LENGTH: 10
+CHANNEL_CODE_MAX_LENGTH: 10
+CHANNEL_NAME_MAX_LENGTH: 20
+MANUFACTURING_PLANT_CODE_MAX_LENGTH: 10
+

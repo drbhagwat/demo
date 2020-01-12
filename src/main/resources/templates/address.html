@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{fragments/layout}">
+<head>
+  <link rel="stylesheet" type="text/css" href="../static/css/company.css"
+        th:href="@{/css/company.css}"/>
+  <script type="text/javascript" th:src="@{/js/address.js}" src="../static/js/address.js"></script>
+  <meta charset="UTF-8">
+  <title>GIMP</title>
+</head>
+<body>
+<div layout:fragment="content" class="company-container">
+  <h1>Company Address Master:</h1>
+  <br>
+  <button th:href="@{/companies/1/addresses/add}" class="btn btn-success new">Add</button>
+  <br>
+  <div class="card">
+    <div class="card-block">
+      <div th:if="${not #lists.isEmpty(data)}">
+        <table class="table table-hover">
+          <thead>
+          <tr>
+            <th>Address1</th>
+            <th>Address2</th>
+            <th>City</th>
+            <th>State</th>
+            <th>Zip</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="address:${data.content}">
+            <td class="address1" th:text="${address.address1}">Addresss1</td>
+            <td class="address2" th:text="${address.address1}">Addresss2</td>
+            <td class="city" th:text="${address.city}">City</td>
+            <td class="state" th:text="${address.state}">State</td>
+            <td class="zip" th:text="${address.zip}">Zip</td>
+            <td><a th:href="@{/companies/1/addresses/get/(id=${address.id})}" class="btn btn-primary edit">Edit</a>
+            <a th:href="@{/companies/1/addresses/delete/(id=${address.id})}" class="btn btn-danger delete">Delete</a>
+          </tr>
+          </tbody>
+        </table>
+        <hr>
+        <ul class="nav nav-pills">
+          <li class="nav-item" th:each="i : ${#numbers.sequence(0, data.totalPages-1)}">
+            <a th:href="@{/companies/1/addresses/getAll/(pageNo=${i})}" th:text="${i}" class="nav-link"
+               th:classappend="${currentPage} == ${i} ? 'active' : ''"></a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="form">
+    <form th:action="@{/companies/1/addresses/add}" method="post">
+      <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel"
+           aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="editModalLabel">Add or Update</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="form-group">
+                <label for="address1" class="col-form-label">Address1</label>
+                <input type="text" class="form-control" id="address1" name="address1" value=""/>
+              </div>
+              <div class="form-group">
+                <label for="address2" class="col-form-label">Address2</label>
+                <input type="text" class="form-control" id="address2" name="address2" value=""/>
+              </div>
+              <div class="form-group">
+                <label for="city" class="col-form-label">City</label>
+                <input type="text" class="form-control" id="city" name="city" value=""/>
+              </div>
+              <div class="form-group">
+                <label for="state" class="col-form-label">State</label>
+                <input type="text" class="form-control" id="state" name="state" value=""/>
+              </div>
+              <div class="form-group">
+                <label for="zip" class="col-form-label">Zip</label>
+                <input type="text" class="form-control" id="zip" name="zip" value=""/>
+              </div>
+
+              <input type="hidden" id="id" th:field="*{id}">
+
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <input type="submit" class="btn btn-primary" value="Save" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p class="alert alert-danger">Are you sure you want to delete this Address? </p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <a href="" type="button" class="btn btn-danger" id="delRef">Delete</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -36,18 +36,18 @@ public class CompanyController {
       model.addAttribute("companies", companies);
       model.addAttribute("currentPage", pageNo);
     }
-    return "company-index";
+    return "company/company-index";
   }
 
   @GetMapping("/add")
   public String add(Company company) {
-    return "add-company";
+    return "company/add-company";
   }
 
   @PostMapping("/add")
   public String add(@Valid Company company, BindingResult result, Model model) {
     if (result.hasErrors()) {
-      return "add-company";
+      return "company/add-company";
     }
     companyRepository.save(company);
     return "redirect:/companies";
@@ -58,14 +58,14 @@ public class CompanyController {
     Company company = companyRepository.findById(companyCode)
       .orElseThrow(() -> new IllegalArgumentException("Invalid Company code:" + companyCode));
     model.addAttribute("company", company);
-    return "update-company";
+    return "company/update-company";
   }
 
   @PostMapping("/update/{companyCode}")
   public String update(@PathVariable String companyCode, @Valid Company company, BindingResult result, Model model) {
     if (result.hasErrors()) {
       company.setCode(companyCode);
-      return "update-company";
+      return "company/update-company";
     }
     companyRepository.save(company);
     return "redirect:/companies";

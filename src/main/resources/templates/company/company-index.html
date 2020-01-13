@@ -17,10 +17,10 @@
             <a href="/companies/add" class="btn btn-primary"> <i
                 class="fas fa-user-plus ml-2"> </i> Add Company </a>
           </p>
-          <div th:if="${companies == null or companies == 'empty'}" class="col-md-10">
+          <div th:if="${companies == 'empty'}" class="col-md-10">
             <h2>No Companies yet!</h2>
           </div>
-          <div th:if="${companies != null and companies != 'empty'}" class="col-md-10">
+          <div th:if="${companies != 'empty'}" class="col-md-10">
             <table class="table table-striped table-responsive-md">
               <thead>
               <tr>

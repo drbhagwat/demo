@@ -20,7 +20,7 @@ public class Address extends BasicLogger<String> {
   @GeneratedValue(strategy = GenerationType.AUTO)
   private int id;
 
-  private boolean isPrimary;
+  private Boolean isPrimary;
 
   @NotBlank(message = "{address1.notblank}")
   private String address1;

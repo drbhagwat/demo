@@ -29,6 +29,7 @@
                 <th>City</th>
                 <th>State</th>
                 <th>Zip</th>
+                <th>Is Primary</th>
                 <th>Edit</th>
                 <th>Delete</th>
               </tr>
@@ -40,7 +41,11 @@
                 <td th:text="${address.city}"></td>
                 <td th:text="${address.state}"></td>
                 <td th:text="${address.zip}"></td>
-                <td><a th:href= "@{'/' + ${entity} + '/' + ${entityId} + '/addresses/update/' + ${address.Id}}"
+                <td>
+                  <input type="radio" disabled='disabled'
+                         th:value=" ${address.isPrimary}"  />
+                </td>
+                <td><a th:href="@{'/' + ${entity} + '/' + ${entityId} + '/addresses/update/' + ${address.Id}}"
                        class="btn btn-primary"><i class="fas fa-user-edit ml-2"></i></a></td>
                 <td><a th:href="@{'/' + ${entity} + '/' + ${entityId} + '/addresses/delete/' + ${address.Id}}"
                        class="btn btn-primary"><i class="fas fa-user-times ml-2"></i></a></td>

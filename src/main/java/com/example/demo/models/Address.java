@@ -22,22 +22,18 @@ public class Address extends BasicLogger<String> {
 
   private boolean isPrimary;
 
-  @NotNull(message = "{ADDRESS1_MANDATORY}")
-  @NotBlank(message = "{ADDRESS1_CANNOT_BE_BLANK}")
+  @NotBlank(message = "{address1.notblank}")
   private String address1;
 
   private String address2;
 
-  @NotNull(message = "{CITY_MANDATORY}")
-  @NotBlank(message = "{CITY_CANNOT_BE_BLANK}")
+  @NotBlank(message = "{city.notblank}")
   private String city;
 
-  @NotNull(message = "{STATE_MANDATORY}")
-  @NotBlank(message = "{STATE_CANNOT_BE_BLANK}")
+  @NotBlank(message = "{state.notblank}")
   private String state;
 
-  @NotNull(message = "{ZIP_MANDATORY}")
-  @NotBlank(message = "{ZIP_CANNOT_BE_BLANK}")
+  @NotBlank(message = "{zip.notblank}")
   private String zip;
 
 /*

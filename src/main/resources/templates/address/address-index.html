@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{fragments/layout}">
+<head>
+</head>
+<body>
+<div layout:fragment="content">
+  <div class="container my-2">
+    <div class="card">
+      <div class="card-body">
+        <h1 th:text="@{${entity} + ' - Address Master:'}"></h1>
+        <div class="container my-5">
+          <p class="my-5">
+            <a th:href="@{'/' + ${entity} + '/' + ${entityId} + '/addresses/add'}" class="btn btn-primary"> <i
+                class="fas fa-user-plus ml-2"> </i> Add Address </a>
+          </p>
+          <div th:if="${addresses == 'empty'}" class="col-md-10">
+            <h2>No Addresses yet!</h2>
+          </div>
+          <div th:if="${addresses != 'empty'}" class="col-md-10">
+            <table class="table table-striped table-responsive-md">
+              <thead>
+              <tr>
+                <th>Address1</th>
+                <th>Address2</th>
+                <th>City</th>
+                <th>State</th>
+                <th>Zip</th>
+                <th>Edit</th>
+                <th>Delete</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr th:each="address : ${addresses}">
+                <td th:text="${address.address1}"></td>
+                <td th:text="${address.address2}"></td>
+                <td th:text="${address.city}"></td>
+                <td th:text="${address.state}"></td>
+                <td th:text="${address.zip}"></td>
+                <td><a th:href= "@{'/' + ${entity} + '/' + ${entityId} + '/addresses/update/' + ${address.Id}}"
+                       class="btn btn-primary"><i class="fas fa-user-edit ml-2"></i></a></td>
+                <td><a th:href="@{'/' + ${entity} + '/' + ${entityId} + '/addresses/delete/' + ${address.Id}}"
+                       class="btn btn-primary"><i class="fas fa-user-times ml-2"></i></a></td>
+              </tr>
+              </tbody>
+            </table>
+            <hr>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

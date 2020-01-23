@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{fragments/layout}">
+<head>
+  <link rel="stylesheet" type="text/css" href="../static/css/company.css"
+        th:href="@{/css/company.css}"/>
+  <meta charset="UTF-8">
+  <title>GIMP</title>
+</head>
+<body>
+<div layout:fragment="content" class="company-container my-2">
+  <div class="container my-5">
+    <h3> Add Address</h3>
+    <div class="card">
+      <div class="card-body">
+        <div class="col-md-10">
+          <form action="#" th:action="@{'/' + ${entity} + '/' + ${entityId} + '/addresses/add'}" th:object="${address}"
+                method="post">
+            <div class="row">
+              <div class="form-group col-md-8">
+                <label for="address1" class="col-form-label">Address1</label> <input type="text" th:field="*{address1}"
+                                                                                     class="form-control" id="address1"
+                                                                                     placeholder="Address1"> <span
+                  th:if="${#fields.hasErrors('address1')}" th:errors="*{address1}" class="text-danger"></span>
+              </div>
+              <div class="form-group col-md-8">
+                <label for="address2" class="col-form-label">Address2</label> <input type="text" th:field="*{address2}"
+                                                                                     class="form-control" id="address2"
+                                                                                     placeholder="Address2"> <span
+                  th:if="${#fields.hasErrors('address2')}" th:errors="*{address2}" class="text-danger"></span>
+              </div>
+              <div class="form-group col-md-8">
+                <label for="city" class="col-form-label">City</label> <input type="text" th:field="*{city}"
+                                                                             class="form-control" id="city"
+                                                                             placeholder="city"> <span
+                  th:if="${#fields.hasErrors('city')}" th:errors="*{city}" class="text-danger"></span>
+              </div>
+
+              <div class="form-group col-md-8">
+                <label for="state" class="col-form-label">State</label> <input type="text" th:field="*{state}"
+                                                                               class="form-control" id="state"
+                                                                               placeholder="state"> <span
+                  th:if="${#fields.hasErrors('state')}" th:errors="*{state}" class="text-danger"></span>
+              </div>
+              <div class="form-group col-md-8">
+                <label for="zip" class="col-form-label">Zip</label> <input type="text" th:field="*{zip}"
+                                                                           class="form-control" id="zip"
+                                                                           placeholder="zip"> <span
+                  th:if="${#fields.hasErrors('zip')}" th:errors="*{city}" class="text-danger"></span>
+              </div>
+
+              <div class="col-md-6">
+                <input type="submit" class="btn btn-primary" value="Add Address">
+              </div>
+              <div class="form-group col-md-8"></div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

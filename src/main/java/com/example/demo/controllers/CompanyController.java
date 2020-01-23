@@ -20,6 +20,8 @@ public class CompanyController {
   @Autowired
   private CompanyRepository companyRepository;
 
+  private static final String COMPANY_HOME = "redirect:/companies";
+
   @GetMapping()
   public String getAll(@RequestParam(defaultValue = "0") Integer pageNo,
                        @RequestParam(defaultValue = "1") Integer pageSize,
@@ -45,12 +47,12 @@ public class CompanyController {
   }
 
   @PostMapping("/add")
-  public String add(@Valid Company company, BindingResult result, Model model) {
+  public String add(@Valid Company company, BindingResult result) {
     if (result.hasErrors()) {
       return "company/add-company";
     }
     companyRepository.save(company);
-    return "redirect:/companies";
+    return COMPANY_HOME;
   }
 
   @GetMapping("/update/{companyCode}")
@@ -62,20 +64,20 @@ public class CompanyController {
   }
 
   @PostMapping("/update/{companyCode}")
-  public String update(@PathVariable String companyCode, @Valid Company company, BindingResult result, Model model) {
+  public String update(@PathVariable String companyCode, @Valid Company company, BindingResult result) {
     if (result.hasErrors()) {
       company.setCode(companyCode);
       return "company/update-company";
     }
     companyRepository.save(company);
-    return "redirect:/companies";
+    return COMPANY_HOME;
   }
 
   @GetMapping("/delete/{companyCode}")
-  public String delete(@PathVariable String companyCode, Model model) {
+  public String delete(@PathVariable String companyCode) {
     Company company = companyRepository.findById(companyCode)
       .orElseThrow(() -> new IllegalArgumentException("Invalid Company code:" + companyCode));
     companyRepository.delete(company);
-    return "redirect:/companies";
+    return COMPANY_HOME;
   }
 }

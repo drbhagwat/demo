@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 @RequestMapping()
@@ -64,12 +63,9 @@ public class AddressController {
     if (result.hasErrors()) {
       return "address/add-address";
     }
-    Optional<Company> existingCompany = companyRepository.findById(entityId);
-
-    if (existingCompany.isEmpty()) {
-      throw  new Exception("Invalid Entity Id: " + entityId);
-    }
-    address.setCompany(existingCompany.get());
+    Company existingCompany = companyRepository.findById(entityId)
+      .orElseThrow(() -> new IllegalArgumentException("Invalid Entity Id:" + entityId));
+    address.setCompany(existingCompany);
     addressRepository.save(address);
     return ADDRESS_HOME;
   }
@@ -80,8 +76,7 @@ public class AddressController {
                        @PathVariable int addressId,
                        Model model) {
     Address existingAddress = addressRepository.findById(addressId)
-      .orElseThrow(() -> new IllegalArgumentException("Invalid address id:" + addressId));
-
+      .orElseThrow(() -> new IllegalArgumentException("Invalid address Id:" + addressId));
     model.addAttribute("address", existingAddress);
     model.addAttribute(ENTITY, entity);
     model.addAttribute(ENTITY_ID, entityId);
@@ -96,11 +91,9 @@ public class AddressController {
     if (result.hasErrors()) {
       return "address/update-address";
     }
-    Optional<Company> existingCompany = companyRepository.findById(entityId);
-
-    if (existingCompany.isEmpty()) {
-      throw  new Exception("Invalid Entity Id: " + entityId);
-    }
+    Company existingCompany = companyRepository.findById(entityId)
+      .orElseThrow(() -> new IllegalArgumentException("Invalid Entity Id:" + entityId));
+    address.setCompany(existingCompany);
     addressRepository.save(address);
     return ADDRESS_HOME;
   }

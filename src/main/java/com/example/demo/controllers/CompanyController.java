@@ -66,7 +66,6 @@ public class CompanyController {
   @PostMapping("/update/{companyCode}")
   public String update(@PathVariable String companyCode, @Valid Company company, BindingResult result) {
     if (result.hasErrors()) {
-      company.setCode(companyCode);
       return "company/update-company";
     }
     companyRepository.save(company);

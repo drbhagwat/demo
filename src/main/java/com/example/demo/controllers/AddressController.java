@@ -137,9 +137,18 @@ public class AddressController {
 
   @Transactional
   @GetMapping("/{entity}/{entityId}/addresses/delete/{addressId}")
-  public String delete(@PathVariable int addressId, Model model) {
+  public String delete(@PathVariable int addressId, Model model) throws Exception {
     Address address = addressRepository.findById(addressId)
       .orElseThrow(() -> new IllegalArgumentException("Invalid address Id:" + addressId));
+
+    // get the list of current addresses from the db.
+    List<Address> addresses = addressRepository.findAll();
+    addresses.remove(address);
+
+    // if there are other addresses in db and none of them is primary
+    if (((addresses.size() != 0)) && isNoAddressPrimary(addresses)) {
+      return "address/delete-address";
+    }
     addressRepository.delete(address);
     return ADDRESS_HOME;
   }

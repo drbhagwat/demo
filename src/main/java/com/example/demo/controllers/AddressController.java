@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -55,6 +56,8 @@ public class AddressController {
     return ADD_ADDRESS;
   }
 
+
+  @Transactional
   @PostMapping("/{entity}/{entityId}/addresses/add")
   public String add(@PathVariable String entity,
                     @PathVariable String entityId,
@@ -70,14 +73,17 @@ public class AddressController {
     // get the list of current addresses from the db.
     List<Address> addresses = addressRepository.findAll();
 
-    // if no address in db is primary and current address is also not
+    // no address in db and current address both are not primary
     if (isNoAddressPrimary(addresses) && (!address.getIsPrimary())) {
       result.rejectValue("isPrimary", "isPrimary.missing");
       return ADD_ADDRESS;
-    } else {
-      addressRepository.save(address);
-      return ADDRESS_HOME;
     }
+    // if current address is primary
+    if (address.getIsPrimary()) {
+      makeExistingPrimaryAsSecondary(addresses);
+    }
+    addressRepository.save(address);
+    return ADDRESS_HOME;
   }
 
   @GetMapping("/{entity}/{entityId}/addresses/update/{addressId}")
@@ -93,6 +99,7 @@ public class AddressController {
     return UPDATE_ADDRESS;
   }
 
+  @Transactional
   @PostMapping("/{entity}/{entityId}/addresses/update/{addressId}")
   public String update(@PathVariable String entity, @PathVariable String entityId,
                        @PathVariable int addressId, @Valid Address address, BindingResult result) throws Exception {
@@ -108,16 +115,27 @@ public class AddressController {
     // get the list of current addresses from the db.
     List<Address> addresses = addressRepository.findAll();
 
-    // if no address in db is primary and current address is also not
-    if (isNoAddressPrimary(addresses) && (!address.getIsPrimary())) {
+    // only one address in db (current one) which is not primary
+    if ( (addresses.size() == 1) && (!address.getIsPrimary())) {
       result.rejectValue("isPrimary", "isPrimary.missing");
       return UPDATE_ADDRESS;
-    } else {
-      addressRepository.save(address);
-      return ADDRESS_HOME;
     }
+
+    // no address in db and current address both are not primary
+    if (isNoAddressPrimary(addresses) && (!address.getIsPrimary())) {
+      result.rejectValue("isPrimary", "isPrimary.missing");
+      return ADD_ADDRESS;
+    }
+
+    // if the current address is mentioned as primary
+    if (address.getIsPrimary()) {
+      makeExistingPrimaryAsSecondary(addresses);
+    }
+    addressRepository.save(address);
+    return ADDRESS_HOME;
   }
 
+  @Transactional
   @GetMapping("/{entity}/{entityId}/addresses/delete/{addressId}")
   public String delete(@PathVariable int addressId, Model model) {
     Address address = addressRepository.findById(addressId)
@@ -137,5 +155,21 @@ public class AddressController {
       }
     }
     return totalPrimaryAddresses == 0;
+  }
+
+  @Transactional
+  private void makeExistingPrimaryAsSecondary(List<Address> addresses) {
+    int size = addresses.size();
+
+    for (int i = 0; i < size; i++) {
+      Address address = addresses.get(i);
+
+      // there is one address in address book which should be primary; change it to secondary
+      if (address.getIsPrimary().booleanValue()) {
+        address.setIsPrimary(false);
+        addressRepository.save(address);
+        return;
+      }
+    }
   }
 }

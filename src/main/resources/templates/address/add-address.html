@@ -54,7 +54,8 @@
 
               <div class="form-group col-md-8">
                 <div class="form-check">
-                  <input type="checkbox" class="form-check-input" id="isPrimary">
+                  <input type="checkbox" th:field="*{isPrimary}" class="form-check-input"
+                         id="isPrimary" name="isPrimary"/>
                   <label class="form-check-label" for="isPrimary">Primary Address?</label>
                   <span th:if="${#fields.hasErrors('isPrimary')}" th:errors="*{isPrimary}" class="text-danger"></span>
                 </div>

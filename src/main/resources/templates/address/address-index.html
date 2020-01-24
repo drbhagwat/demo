@@ -42,8 +42,8 @@
                 <td th:text="${address.state}"></td>
                 <td th:text="${address.zip}"></td>
                 <td>
-                  <input type="radio" disabled='disabled'
-                         th:value=" ${address.isPrimary}"  />
+                  <input type="checkbox" disabled='disabled'
+                         th:checked="${address.isPrimary}"  />
                 </td>
                 <td><a th:href="@{'/' + ${entity} + '/' + ${entityId} + '/addresses/update/' + ${address.Id}}"
                        class="btn btn-primary"><i class="fas fa-user-edit ml-2"></i></a></td>

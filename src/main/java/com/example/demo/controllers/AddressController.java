@@ -26,6 +26,8 @@ public class AddressController {
   private static final String ADDRESS_HOME = "redirect:/{entity}/{entityId}/addresses";
   private static final String ENTITY = "entity";
   private static final String ENTITY_ID = "entityId";
+  private static final String UPDATE_ADDRESS = "address/update-address";
+  private static final String ADD_ADDRESS = "address/add-address";
 
   @GetMapping("/{entity}/{entityId}/addresses")
   public String getAll(@PathVariable String entity,
@@ -37,8 +39,7 @@ public class AddressController {
 
     if (addresses.isEmpty()) {
       model.addAttribute("addresses", "empty");
-    }
-    else {
+    } else {
       model.addAttribute("addresses", addresses);
     }
     return "address/address-index";
@@ -51,21 +52,32 @@ public class AddressController {
     model.addAttribute(ENTITY, entity);
     model.addAttribute(ENTITY_ID, entityId);
     model.addAttribute("address", new Address());
-    return "address/add-address";
+    return ADD_ADDRESS;
   }
 
   @PostMapping("/{entity}/{entityId}/addresses/add")
   public String add(@PathVariable String entity,
                     @PathVariable String entityId,
                     @Valid Address address, BindingResult result) throws Exception {
+
     if (result.hasErrors()) {
-      return "address/add-address";
+      return ADD_ADDRESS;
     }
     Company existingCompany = companyRepository.findById(entityId)
       .orElseThrow(() -> new IllegalArgumentException("Invalid Entity Id:" + entityId));
     address.setCompany(existingCompany);
-    addressRepository.save(address);
-    return ADDRESS_HOME;
+
+    // get the list of current addresses from the db.
+    List<Address> addresses = addressRepository.findAll();
+
+    // if no address in db is primary and current address is also not
+    if (isNoAddressPrimary(addresses) && (!address.getIsPrimary())) {
+      result.rejectValue("isPrimary", "isPrimary.missing");
+      return ADD_ADDRESS;
+    } else {
+      addressRepository.save(address);
+      return ADDRESS_HOME;
+    }
   }
 
   @GetMapping("/{entity}/{entityId}/addresses/update/{addressId}")
@@ -78,7 +90,7 @@ public class AddressController {
     model.addAttribute("address", existingAddress);
     model.addAttribute(ENTITY, entity);
     model.addAttribute(ENTITY_ID, entityId);
-    return "address/update-address";
+    return UPDATE_ADDRESS;
   }
 
   @PostMapping("/{entity}/{entityId}/addresses/update/{addressId}")
@@ -87,13 +99,23 @@ public class AddressController {
     address.setId(addressId);
 
     if (result.hasErrors()) {
-      return "address/update-address";
+      return UPDATE_ADDRESS;
     }
     Company existingCompany = companyRepository.findById(entityId)
       .orElseThrow(() -> new IllegalArgumentException("Invalid Entity Id:" + entityId));
     address.setCompany(existingCompany);
-    addressRepository.save(address);
-    return ADDRESS_HOME;
+
+    // get the list of current addresses from the db.
+    List<Address> addresses = addressRepository.findAll();
+
+    // if no address in db is primary and current address is also not
+    if (isNoAddressPrimary(addresses) && (!address.getIsPrimary())) {
+      result.rejectValue("isPrimary", "isPrimary.missing");
+      return UPDATE_ADDRESS;
+    } else {
+      addressRepository.save(address);
+      return ADDRESS_HOME;
+    }
   }
 
   @GetMapping("/{entity}/{entityId}/addresses/delete/{addressId}")
@@ -102,5 +124,18 @@ public class AddressController {
       .orElseThrow(() -> new IllegalArgumentException("Invalid address Id:" + addressId));
     addressRepository.delete(address);
     return ADDRESS_HOME;
+  }
+
+  private boolean isNoAddressPrimary(List<Address> addresses) {
+    int size = addresses.size();
+    int totalPrimaryAddresses = 0;
+
+    for (int i = 0; i < size; i++) {
+
+      if (addresses.get(i).getIsPrimary().booleanValue()) {
+        totalPrimaryAddresses++;
+      }
+    }
+    return totalPrimaryAddresses == 0;
   }
 }

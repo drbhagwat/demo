@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{fragments/layout}">
+<head>
+  <meta charset="UTF-8">
+  <title>Company Exits</title>
+</head>
+<body>
+<div layout:fragment="content" class="company-container my-2">
+  <div class="container my-5">
+    <div class="card">
+      <div class="card-body">
+        <div class="col-md-10">
+          <h3 class="text-danger">
+            A company with code
+            <span th:text="${companyCode}"></span>
+            already exits! Please enter a different unique code for the company and add it again.</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

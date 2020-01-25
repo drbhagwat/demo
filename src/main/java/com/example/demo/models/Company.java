@@ -6,11 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import javax.persistence.OneToMany;
-import javax.persistence.CascadeType;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,13 +17,14 @@ import java.util.List;
 @AllArgsConstructor
 public class Company extends BasicLogger<String> {
   @Id
-  @NotBlank(message = "{code.notblank}")
+  @NotBlank(message = "{code.cannotbeblank}")
+  @Column(unique=true)
   private String code;
 
-  @NotBlank(message = "{name.notblank}")
+  @NotBlank(message = "{name.cannotbeblank}")
   private String name;
 
-  @NotBlank(message = "{description.notblank}")
+  @NotBlank(message = "{description.cannotbeblank}")
   private String description;
 
   @JsonIgnore

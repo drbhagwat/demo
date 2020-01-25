@@ -4,48 +4,52 @@
       xmlns="http://www.w3.org/1999/xhtml"
       layout:decorate="~{fragments/layout}">
 <head>
-  <link rel="stylesheet" type="text/css" href="../static/css/company.css"
-        th:href="@{/css/company.css}"/>
-  <script type="text/javascript" th:src="@{/js/main.js}" src="../static/js/main.js"></script>
   <meta charset="UTF-8">
-  <title>Company Master - Update</title>
+  <title>Company - Update</title>
 </head>
 <body>
-<div layout:fragment="content" class="company-container my-5">
-  <h3> Update Company</h3>
-  <div class="card">
-    <div class="card-body">
-      <div class="col-md-8">
-        <form th:action="@{/companies/update/{companyCode}(companyCode=${company.code})}"
-              th:object="${company}" method="post">
-          <div class="row">
-            <div class="form-group col-md-8">
-              <label for="code" class="col-form-label">Code</label> <input type="text" th:field="*{code}"
-                                                                           class="form-control" id="code"
-                                                                           placeholder="Code" readonly> <span
-                th:if="${#fields.hasErrors('code')}" th:errors="*{code}" class="text-danger"></span>
+<div layout:fragment="content">
+  <div class="container my-2">
+    <div class="card">
+      <div class="card-body">
+        <h3> Update Company</h3>
+        <div class="col-md-8">
+          <form th:action="@{/companies/update/{companyCode}(companyCode=${company.code})}"
+                th:object="${company}" method="post">
+            <div class="row">
+              <div class="form-group col-md-8">
+                <label for="code" class="col-form-label">Code</label> <input type="text" th:field="*{code}"
+                                                                             class="form-control" id="code"
+                                                                             placeholder="Enter a unique company code"
+                                                                             readonly> <span
+                  th:if="${#fields.hasErrors('code')}" th:errors="*{code}" class="text-danger"></span>
+              </div>
+              <div class="form-group col-md-8">
+                <label for="name" class="col-form-label">Name</label> <input type="text" th:field="*{name}"
+                                                                             class="form-control" id="name"
+                                                                             placeholder="Enter the name of the company">
+                <span
+                    th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></span>
+              </div>
+              <div class="form-group col-md-8">
+                <label for="description" class="col-form-label">Description</label> <input type="text"
+                                                                                           th:field="*{description}"
+                                                                                           class="form-control"
+                                                                                           id="description"
+                                                                                           placeholder="Enter the description of company">
+                <span
+                    th:if="${#fields.hasErrors('description')}" th:errors="*{description}" class="text-danger"></span>
+              </div>
+              <div class="col-md-6">
+                <button class="btn btn-warning" type="submit">
+                  <i class="fas fa-user-edit ml-2"> </i>
+                  Update
+                </button>
+              </div>
+              <div class="form-group col-md-8"></div>
             </div>
-            <div class="form-group col-md-8">
-              <label for="name" class="col-form-label">Name</label> <input type="text" th:field="*{name}"
-                                                                           class="form-control" id="name"
-                                                                           placeholder="Name"> <span
-                th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></span>
-            </div>
-            <div class="form-group col-md-8">
-              <label for="description" class="col-form-label">Description</label> <input type="text"
-                                                                                         th:field="*{description}"
-                                                                                         class="form-control"
-                                                                                         id="description"
-                                                                                         placeholder="description">
-              <span
-                  th:if="${#fields.hasErrors('description')}" th:errors="*{description}" class="text-danger"></span>
-            </div>
-            <div class="col-md-6">
-              <input type="submit" class="btn btn-warning" value="Update Company">
-            </div>
-            <div class="form-group col-md-8"></div>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   </div>

@@ -5,7 +5,7 @@
       layout:decorate="~{fragments/layout}">
 <head>
   <meta charset="UTF-8">
-  <title>Company Index</title>
+  <title>Company Index1</title>
 </head>
 <body>
 <div layout:fragment="content">
@@ -19,10 +19,10 @@
                 class="fas fa-user-plus ml-2"> </i> Add Company </a>
           </p>
           <div th:if="${companies == 'empty'}">
-            <h2 class="text-info">No company yet! You could add one.</h2>
+            <h3 class="text-info">No company yet. Please add one.</h3>
           </div>
-          <div th:if="${companies != 'empty'}" class="table-responsive col-md-10">
-            <table class="table table-sm table-bordered table-striped">
+          <div th:if="${companies != 'empty'}" class="table-responsive">
+            <table class="table table-bordered table-striped">
               <thead class="thead-dark">
               <tr>
                 <th>Code</th>

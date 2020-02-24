@@ -5,19 +5,17 @@
       layout:decorate="~{fragments/layout}">
 <head>
   <meta charset="UTF-8">
-  <title>Company Exits</title>
+  <title>Company Exists</title>
 </head>
 <body>
-<div layout:fragment="content" class="company-container my-2">
-  <div class="container my-5">
+<div layout:fragment="content">
+  <div class="container my-2">
     <div class="card">
       <div class="card-body">
-        <div class="col-md-10">
-          <h3 class="text-danger">
-            A company with code
-            <span th:text="${companyCode}"></span>
-            already exits! Please enter a different unique code for the company and add it again.</h3>
-        </div>
+        <h3 class="text-danger">
+          A company with code
+          <span th:text="${companyCode}"></span>
+          already exists! Please enter a unique and a different code for the company and try adding it again.</h3>
       </div>
     </div>
   </div>

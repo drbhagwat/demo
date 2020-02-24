@@ -27,7 +27,6 @@ public class Company extends BasicLogger<String> {
   @NotBlank(message = "{description.cannotbeblank}")
   private String description;
 
-  @JsonIgnore
   @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Address> addresses = new ArrayList<>();
 }

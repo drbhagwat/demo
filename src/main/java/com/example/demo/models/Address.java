@@ -50,7 +50,6 @@ public class Address extends BasicLogger<String> {
   private String contactNumber;
 */
 
-  @JsonIgnore
   @ManyToOne
   @JoinColumn
   private Company company;

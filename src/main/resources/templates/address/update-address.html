@@ -4,16 +4,14 @@
       xmlns="http://www.w3.org/1999/xhtml"
       layout:decorate="~{fragments/layout}">
 <head>
-  <link rel="stylesheet" type="text/css" href="../static/css/company.css"
-        th:href="@{/css/company.css}"/>
   <meta charset="UTF-8">
   <title>Update Address</title>
 </head>
 <body>
-<div layout:fragment="content" class="company-container my-5">
-  <h3> Update Address</h3>
+<div layout:fragment="content" class="my-2">
   <div class="card">
     <div class="card-body">
+      <h3> Update Address</h3>
       <div class="col-md-8">
         <form action="#" th:action="@{'/' + ${entity} + '/' + ${entityId} + '/addresses/update/' + ${address.id}}"
               th:object="${address}" method="post">

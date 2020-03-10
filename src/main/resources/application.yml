@@ -1,5 +1,21 @@
 # Spring Boot configuration
 spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 187728350524-5rnp1tm4v08e9f4tncdjurqge9jm4tce.apps.googleusercontent.com
+            client-secret: fxonat-cfNpttuLxGovEyruj
+            redirectUri: "http://localhost:8080/login/oauth2/code/google"
+          facebook:
+            client-id: 242340783448984
+            client-secret: a247b468f7125a83932d141a10069144
+            redirectUri: "http://localhost:8080/login/oauth2/code/facebook"
+          github:
+            clientId: 62e8ccdd4cf568d81d70
+            clientSecret: fa24169e2d99a188e390bbfdd6bf734c99829623
+            redirectUri: "http://localhost:8080/login/oauth2/code/github"
   thymeleaf:
     cache: false
   # Server configuration
@@ -22,6 +38,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+      naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
     show-sql: true
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 
@@ -48,4 +65,3 @@ WAREHOUSE_CODE_MAX_LENGTH: 10
 CHANNEL_CODE_MAX_LENGTH: 10
 CHANNEL_NAME_MAX_LENGTH: 20
 MANUFACTURING_PLANT_CODE_MAX_LENGTH: 10
-

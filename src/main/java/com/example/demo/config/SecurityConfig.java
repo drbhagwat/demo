@@ -10,10 +10,10 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-    http.authorizeRequests()
+    http
+        .antMatcher("/**").authorizeRequests()
         .antMatchers("/css/**", "/images/**",  "/webjars/**", "/oauth_login").permitAll()
-        .anyRequest()
-        .authenticated()
+        .anyRequest().authenticated()
         .and()
         .oauth2Login()
         .loginPage("/oauth_login");

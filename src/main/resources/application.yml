@@ -7,15 +7,15 @@ spring:
           google:
             client-id: 187728350524-5rnp1tm4v08e9f4tncdjurqge9jm4tce.apps.googleusercontent.com
             client-secret: fxonat-cfNpttuLxGovEyruj
-            redirectUri: "http://localhost:8080/login/oauth2/code/google"
+#            redirectUri: "http://localhost:8080/login/oauth2/code/google"
           facebook:
             client-id: 242340783448984
             client-secret: a247b468f7125a83932d141a10069144
-            redirectUri: "http://localhost:8080/login/oauth2/code/facebook"
+#            redirectUri: "http://localhost:8080/login/oauth2/code/facebook"
           github:
             clientId: 62e8ccdd4cf568d81d70
             clientSecret: fa24169e2d99a188e390bbfdd6bf734c99829623
-            redirectUri: "http://localhost:8080/login/oauth2/code/github"
+#            redirectUri: "http://localhost:8080/login/oauth2/code/github"
   thymeleaf:
     cache: false
   # Server configuration

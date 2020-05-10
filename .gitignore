@@ -33,8 +33,9 @@ pom.xml.next
 release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
-.mvn/timing.properties
-.mvn/wrapper/maven-wrapper.jar
+.*/
+mvnw
+mvnw.cmd
 
 ##########################
 ## IntelliJ
@@ -43,7 +44,6 @@ buildNumber.properties
 *.iml
 *.ipr
 *.iws
-*.jar
 *.sw?
 *~
 .#*
@@ -52,7 +52,7 @@ buildNumber.properties
 .classpath
 .factorypath
 .gradle
-.idea
+.idea/
 .metadata
 .project
 .recommenders
@@ -66,7 +66,6 @@ activemq-data
 bin
 build
 build.log
-dependency-reduced-pom.xml
 dump.rdb
 interpolated*.xml
 lib/
@@ -82,9 +81,6 @@ secrets.yml
 ##########################
 ## Eclipse
 ##########################
-.metadata
-.classpath
-.project
 .settings/
 bin/
 tmp/

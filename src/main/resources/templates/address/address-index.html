@@ -25,7 +25,7 @@
             <table class="table table-bordered table-striped">
               <thead class="thead-dark">
               <tr>
-                <th>Address1</th>
+                <th>Address</th>
                 <th>Address2</th>
                 <th>City</th>
                 <th>State</th>
@@ -37,7 +37,7 @@
               </thead>
               <tbody>
               <tr th:each="address : ${addresses}">
-                <td th:text="${address.address1}"></td>
+                <td th:text="${address.address}"></td>
                 <td th:text="${address.address2}"></td>
                 <td th:text="${address.city}"></td>
                 <td th:text="${address.state}"></td>

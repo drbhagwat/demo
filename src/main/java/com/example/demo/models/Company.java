@@ -4,11 +4,10 @@ package com.example.demo.models;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import java.util.ArrayList;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Entity
@@ -17,16 +16,18 @@ import java.util.List;
 @AllArgsConstructor
 public class Company extends BasicLogger<String> {
   @Id
-  @NotBlank(message = "{code.cannotbeblank}")
-  @Column(unique=true)
+  @NotBlank(message = "{company.code.cannotbeblank}")
   private String code;
 
-  @NotBlank(message = "{name.cannotbeblank}")
+  @NotBlank(message = "{company.name.cannotbeblank}")
   private String name;
 
-  @NotBlank(message = "{description.cannotbeblank}")
+  @NotBlank(message = "{company.description.cannotbeblank}")
   private String description;
 
-  @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<Address> addresses = new ArrayList<>();
+  @OneToMany(cascade =
+      CascadeType.ALL,
+      orphanRemoval = true)
+  @JoinColumn(name = "company_code")
+  private List<Address> addresses;
 }

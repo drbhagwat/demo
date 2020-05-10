@@ -12,19 +12,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   protected void configure(HttpSecurity http) throws Exception {
     http
         .antMatcher("/**").authorizeRequests()
-        .antMatchers("/css/**", "/images/**",  "/webjars/**", "/oauth_login").permitAll()
+        .antMatchers("/css/**", "/images/**", "/webjars/**", "/oauth_login").permitAll()
         .anyRequest().authenticated()
         .and()
         .oauth2Login()
         .loginPage("/oauth_login");
   }
-/*
-  @Override
-  protected void configure(HttpSecurity http) throws Exception {
-    http.authorizeRequests()
-        .anyRequest().authenticated()
-        .and()
-        .oauth2Login();
-  }
-*/
 }

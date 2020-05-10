@@ -1,6 +1,7 @@
 package com.example.demo.controllers;
 
 import com.example.demo.models.Address;
+import com.example.demo.models.AddressKey;
 import com.example.demo.models.Company;
 import com.example.demo.repositories.AddressRepository;
 import com.example.demo.repositories.CompanyRepository;
@@ -89,10 +90,11 @@ public class AddressController {
   @GetMapping("/{entity}/{entityId}/addresses/update/{addressId}")
   public String update(@PathVariable String entity,
                        @PathVariable String entityId,
-                       @PathVariable int addressId,
+                       @PathVariable AddressKey addressKey,
                        Model model) {
-    Address existingAddress = addressRepository.findById(addressId)
-      .orElseThrow(() -> new IllegalArgumentException("Invalid address Id:" + addressId));
+    Address existingAddress = addressRepository.findById(addressKey)
+      .orElseThrow(() -> new IllegalArgumentException("Invalid address " +
+          "key:" + addressKey));
     model.addAttribute("address", existingAddress);
     model.addAttribute(ENTITY, entity);
     model.addAttribute(ENTITY_ID, entityId);
@@ -102,8 +104,10 @@ public class AddressController {
   @Transactional
   @PostMapping("/{entity}/{entityId}/addresses/update/{addressId}")
   public String update(@PathVariable String entity, @PathVariable String entityId,
-                       @PathVariable int addressId, @Valid Address address, BindingResult result) throws Exception {
-    address.setId(addressId);
+                       @PathVariable AddressKey addressKey,
+                       @Valid Address address,
+                       BindingResult result) throws Exception {
+    address.setAddressKey(addressKey);
 
     if (result.hasErrors()) {
       return UPDATE_ADDRESS;
@@ -136,10 +140,12 @@ public class AddressController {
   }
 
   @Transactional
-  @GetMapping("/{entity}/{entityId}/addresses/delete/{addressId}")
-  public String delete(@PathVariable int addressId, Model model) throws Exception {
-    Address address = addressRepository.findById(addressId)
-      .orElseThrow(() -> new IllegalArgumentException("Invalid address Id:" + addressId));
+  @GetMapping("/{entity}/{entityId}/addresses/delete/{addressKey}")
+  public String delete(@PathVariable AddressKey addressKey,
+                       Model model) throws Exception {
+    Address address = addressRepository.findById(addressKey)
+      .orElseThrow(() -> new IllegalArgumentException("Invalid address " +
+          "key:" + addressKey));
 
     // get the list of current addresses from the db.
     List<Address> addresses = addressRepository.findAll();

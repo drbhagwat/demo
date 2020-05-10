@@ -5,8 +5,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 @Entity
 @Data
@@ -14,25 +16,12 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 @Component
 public class Address extends BasicLogger<String> {
-  @Id
-  @GeneratedValue
-  private int id;
+  @EmbeddedId
+  private AddressKey addressKey;
 
   private Boolean isPrimary;
 
-  @NotBlank(message = "{address.cannotbeblank}")
-  private String address;
-
   private String address2;
-
-  @NotBlank(message = "{city.cannotbeblank}")
-  private String city;
-
-  @NotBlank(message = "{state.cannotbeblank}")
-  private String state;
-
-  @NotBlank(message = "{zip.cannotbeblank}")
-  private String zip;
 
   @ManyToOne
   @JoinColumn

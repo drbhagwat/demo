@@ -15,7 +15,8 @@
         <h1 th:text="@{${entity} + ' - Address Master:'}"></h1>
         <div class="container">
           <p class="my-5">
-            <a th:href="@{'/' + ${entity} + '/' + ${entityId} + '/addresses/add'}" class="btn btn-success"> <i
+            <a th:href="@{'/' + ${entity} + '/' + ${entityId} + '/addresses/add'}"
+               class="btn btn-success"> <i
                 class="fas fa-user-plus ml-2"> </i> Add Address </a>
           </p>
           <div th:if="${addresses == 'empty'}" class="col-md-10">
@@ -37,19 +38,23 @@
               </thead>
               <tbody>
               <tr th:each="address : ${addresses}">
-                <td th:text="${address.address}"></td>
+                <td th:text="${address.addressKey.address}"></td>
                 <td th:text="${address.address2}"></td>
-                <td th:text="${address.city}"></td>
-                <td th:text="${address.state}"></td>
-                <td th:text="${address.zip}"></td>
+                <td th:text="${address.addressKey.city}"></td>
+                <td th:text="${address.addressKey.state}"></td>
+                <td th:text="${address.addressKey.zip}"></td>
                 <td>
                   <input type="checkbox" disabled='disabled'
                          th:checked="${address.isPrimary}"/>
                 </td>
-                <td><a th:href="@{'/' + ${entity} + '/' + ${entityId} + '/addresses/update/' + ${address.Id}}"
-                       class="btn btn-primary"><i class="fas fa-user-edit ml-2"></i></a></td>
-                <td><a th:href="@{'/' + ${entity} + '/' + ${entityId} + '/addresses/delete/' + ${address.Id}}"
-                       class="btn btn-primary"><i class="fas fa-user-times ml-2"></i></a></td>
+                <td><a
+                    th:href="@{'/' + ${entity} + '/' + ${entityId} + '/addresses/update/' + ${address.addressKey}}"
+                    class="btn btn-primary"><i
+                    class="fas fa-user-edit ml-2"></i></a></td>
+                <td><a
+                    th:href="@{'/' + ${entity} + '/' + ${entityId} + '/addresses/delete/' + ${address.addressKey}}"
+                    class="btn btn-primary"><i
+                    class="fas fa-user-times ml-2"></i></a></td>
               </tr>
               </tbody>
             </table>

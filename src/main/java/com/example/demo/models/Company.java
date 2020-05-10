@@ -24,9 +24,7 @@ public class Company extends BasicLogger<String> {
   @NotBlank(message = "{company.description.cannotbeblank}")
   private String description;
 
-  @OneToMany(cascade =
-      CascadeType.ALL,
-      orphanRemoval = true)
+  @OneToMany(orphanRemoval = true)
   @JoinColumn(name = "company_code")
   private List<Address> addresses;
 }

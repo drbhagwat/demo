@@ -25,7 +25,8 @@ public class AddressController {
   @Autowired
   private CompanyRepository companyRepository;
 
-  private static final String ADDRESS_HOME = "redirect:/{entity}/{entityId}/addresses";
+  private static final String ADDRESS_HOME = "redirect:/{entity}/{entityId" +
+      "}/addresses";
   private static final String ENTITY = "entity";
   private static final String ENTITY_ID = "entityId";
   private static final String UPDATE_ADDRESS = "address/update-address";
@@ -68,7 +69,7 @@ public class AddressController {
       return ADD_ADDRESS;
     }
     Company existingCompany = companyRepository.findById(entityId)
-      .orElseThrow(() -> new IllegalArgumentException("Invalid Entity Id:" + entityId));
+        .orElseThrow(() -> new IllegalArgumentException("Invalid Entity Id:" + entityId));
     address.setCompany(existingCompany);
 
     // get the list of current addresses from the db.
@@ -93,8 +94,8 @@ public class AddressController {
                        @PathVariable AddressKey addressKey,
                        Model model) {
     Address existingAddress = addressRepository.findById(addressKey)
-      .orElseThrow(() -> new IllegalArgumentException("Invalid address " +
-          "key:" + addressKey));
+        .orElseThrow(() -> new IllegalArgumentException("Invalid address " +
+            "key:" + addressKey));
     model.addAttribute("address", existingAddress);
     model.addAttribute(ENTITY, entity);
     model.addAttribute(ENTITY_ID, entityId);
@@ -103,24 +104,25 @@ public class AddressController {
 
   @Transactional
   @PostMapping("/{entity}/{entityId}/addresses/update/{addressKey}")
-  public String update(@PathVariable String entity, @PathVariable String entityId,
+  public String update(@PathVariable String entity,
+                       @PathVariable String entityId,
                        @PathVariable AddressKey addressKey,
                        @Valid Address address,
-                       BindingResult result) throws Exception {
+                       BindingResult result) {
     address.setAddressKey(addressKey);
 
     if (result.hasErrors()) {
       return UPDATE_ADDRESS;
     }
     Company existingCompany = companyRepository.findById(entityId)
-      .orElseThrow(() -> new IllegalArgumentException("Invalid Entity Id:" + entityId));
+        .orElseThrow(() -> new IllegalArgumentException("Invalid Entity Id:" + entityId));
     address.setCompany(existingCompany);
 
     // get the list of current addresses from the db.
     List<Address> addresses = addressRepository.findAll();
 
     // only one address in db (current one) which is not primary
-    if ( (addresses.size() == 1) && (!address.getIsPrimary())) {
+    if ((addresses.size() == 1) && (!address.getIsPrimary())) {
       result.rejectValue("isPrimary", "isPrimary.missing");
       return UPDATE_ADDRESS;
     }
@@ -141,11 +143,12 @@ public class AddressController {
 
   @Transactional
   @GetMapping("/{entity}/{entityId}/addresses/delete/{addressKey}")
-  public String delete(@PathVariable AddressKey addressKey,
-                       Model model) throws Exception {
+  public String delete(@PathVariable String entity,
+                       @PathVariable String entityId,
+                       @PathVariable AddressKey addressKey) {
     Address address = addressRepository.findById(addressKey)
-      .orElseThrow(() -> new IllegalArgumentException("Invalid address " +
-          "key:" + addressKey));
+        .orElseThrow(() -> new IllegalArgumentException("Invalid address " +
+            "key:" + addressKey));
 
     // get the list of current addresses from the db.
     List<Address> addresses = addressRepository.findAll();
@@ -179,7 +182,8 @@ public class AddressController {
     for (int i = 0; i < size; i++) {
       Address address = addresses.get(i);
 
-      // there is one address in address book which should be primary; change it to secondary
+      // there is one address in address book which should be primary; change
+      // it to secondary
       if (address.getIsPrimary().booleanValue()) {
         address.setIsPrimary(false);
         addressRepository.save(address);

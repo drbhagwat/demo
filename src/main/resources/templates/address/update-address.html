@@ -14,7 +14,7 @@
       <h3> Update Address</h3>
       <div class="col-md-8">
         <form action="#"
-              th:action="@{'/' + ${entity} + '/' + ${entityId} + '/addresses/update/' + ${address.id}}"
+              th:action="@{'/' + ${entity} + '/' + ${entityId} + '/addresses/update/' + ${address.addressKey}}"
               th:object="${address}" method="post">
           <div class="row">
             <div class="form-group col-md-8">

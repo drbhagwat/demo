@@ -87,7 +87,7 @@ public class AddressController {
     return ADDRESS_HOME;
   }
 
-  @GetMapping("/{entity}/{entityId}/addresses/update/{addressId}")
+  @GetMapping("/{entity}/{entityId}/addresses/update/{addressKey}")
   public String update(@PathVariable String entity,
                        @PathVariable String entityId,
                        @PathVariable AddressKey addressKey,
@@ -102,7 +102,7 @@ public class AddressController {
   }
 
   @Transactional
-  @PostMapping("/{entity}/{entityId}/addresses/update/{addressId}")
+  @PostMapping("/{entity}/{entityId}/addresses/update/{addressKey}")
   public String update(@PathVariable String entity, @PathVariable String entityId,
                        @PathVariable AddressKey addressKey,
                        @Valid Address address,

@@ -14,36 +14,42 @@
       <div class="card-body">
         <h1>Company Master - Add company</h1>
         <div class="container">
-          <form th:action="@{/companies/add}" th:object="${company}" method="post">
+          <form th:action="@{/companies/add}" th:object="${company}"
+                method="post">
             <div class="row">
               <div class="form-group col-md-8">
-                <label for="code" class="col-form-label">Code</label> <input type="text"
-                                                                             th:field="*{code}"
-                                                                             class="form-control"
-                                                                             id="code"
-                                                                             placeholder="Enter a unique company code">
+                <label for="code" class="col-form-label">Code</label> <input
+                  type="text"
+                  th:field="*{code}"
+                  class="form-control"
+                  id="code"
+                  placeholder="Enter a unique company code">
                 <span
                     th:if="${#fields.hasErrors('code')}" th:errors="*{code}"
                     class="text-danger"></span>
               </div>
               <div class="form-group col-md-8">
-                <label for="name" class="col-form-label">Name</label> <input type="text"
-                                                                             th:field="*{name}"
-                                                                             class="form-control"
-                                                                             id="name"
-                                                                             placeholder="Enter the name of the company">
+                <label for="name" class="col-form-label">Name</label> <input
+                  type="text"
+                  th:field="*{name}"
+                  class="form-control"
+                  id="name"
+                  placeholder="Enter the name of the company">
                 <span
                     th:if="${#fields.hasErrors('name')}" th:errors="*{name}"
                     class="text-danger"></span>
               </div>
               <div class="form-group col-md-8">
-                <label for="description" class="col-form-label">Description</label> <input type="text"
-                                                                                           th:field="*{description}"
-                                                                                           class="form-control"
-                                                                                           id="description"
-                                                                                           placeholder="Enter the description of company">
+                <label for="description"
+                       class="col-form-label">Description</label> <input
+                  type="text"
+                  th:field="*{description}"
+                  class="form-control"
+                  id="description"
+                  placeholder="Enter the description of company">
                 <span
-                    th:if="${#fields.hasErrors('description')}" th:errors="*{description}"
+                    th:if="${#fields.hasErrors('description')}"
+                    th:errors="*{description}"
                     class="text-danger"></span>
               </div>
               <div class="col-md-6">

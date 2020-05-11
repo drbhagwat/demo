@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -24,7 +25,7 @@ public class Company extends BasicLogger<String> {
   @NotBlank(message = "{company.description.cannotbeblank}")
   private String description;
 
-  @OneToMany(orphanRemoval = true)
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
   @JoinColumn(name = "company_code")
-  private List<Address> addresses;
+  private List<Address> addresses = new ArrayList<>();
 }

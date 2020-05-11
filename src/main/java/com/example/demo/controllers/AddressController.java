@@ -9,9 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
@@ -29,12 +27,13 @@ public class AddressController {
       "}/addresses";
   private static final String ENTITY = "entity";
   private static final String ENTITY_ID = "entityId";
+  private static final String ADDRESS_KEY = "addressKey";
   private static final String UPDATE_ADDRESS = "address/update-address";
   private static final String ADD_ADDRESS = "address/add-address";
 
-  @GetMapping("/{entity}/{entityId}/addresses")
-  public String getAll(@PathVariable String entity,
-                       @PathVariable String entityId,
+  @GetMapping(value = "/{entity}/{entityId}/addresses")
+  public String getAll(@PathVariable("entity") String entity,
+                       @PathVariable("entityId") String entityId,
                        Model model) {
     List<Address> addresses = addressRepository.findAll();
     model.addAttribute(ENTITY, entity);
@@ -49,8 +48,8 @@ public class AddressController {
   }
 
   @GetMapping("/{entity}/{entityId}/addresses/add")
-  public String add(@PathVariable String entity,
-                    @PathVariable String entityId,
+  public String add(@PathVariable("entity") String entity,
+                    @PathVariable("entityId") String entityId,
                     Model model) {
     model.addAttribute(ENTITY, entity);
     model.addAttribute(ENTITY_ID, entityId);
@@ -61,9 +60,10 @@ public class AddressController {
 
   @Transactional
   @PostMapping("/{entity}/{entityId}/addresses/add")
-  public String add(@PathVariable String entity,
-                    @PathVariable String entityId,
-                    @Valid Address address, BindingResult result) throws Exception {
+  public String add(@PathVariable("entity") String entity,
+                    @PathVariable("entityId") String entityId,
+                    @Valid Address address,
+                    BindingResult result) throws Exception {
 
     if (result.hasErrors()) {
       return ADD_ADDRESS;
@@ -89,9 +89,9 @@ public class AddressController {
   }
 
   @GetMapping("/{entity}/{entityId}/addresses/update/{addressKey}")
-  public String update(@PathVariable String entity,
-                       @PathVariable String entityId,
-                       @PathVariable AddressKey addressKey,
+  public String update(@PathVariable("entity") String entity,
+                       @PathVariable("entityId") String entityId,
+                       @PathVariable("addressKey") AddressKey addressKey,
                        Model model) {
     Address existingAddress = addressRepository.findById(addressKey)
         .orElseThrow(() -> new IllegalArgumentException("Invalid address " +
@@ -99,15 +99,16 @@ public class AddressController {
     model.addAttribute("address", existingAddress);
     model.addAttribute(ENTITY, entity);
     model.addAttribute(ENTITY_ID, entityId);
+//    model.addAttribute(ADDRESS_KEY, addressKey);
     return UPDATE_ADDRESS;
   }
 
   @Transactional
   @PostMapping("/{entity}/{entityId}/addresses/update/{addressKey}")
-  public String update(@PathVariable String entity,
-                       @PathVariable String entityId,
-                       @PathVariable AddressKey addressKey,
-                       @Valid Address address,
+  public String update(@PathVariable("entity") String entity,
+                       @PathVariable("entityId") String entityId,
+                       @PathVariable("addressKey") AddressKey addressKey,
+                       @ModelAttribute @Valid Address address,
                        BindingResult result) {
     address.setAddressKey(addressKey);
 
@@ -142,9 +143,9 @@ public class AddressController {
   }
 
   @Transactional
-  @GetMapping("/{entity}/{entityId}/addresses/delete/{addressKey}")
-  public String delete(@PathVariable String entity,
-                       @PathVariable String entityId,
+  @GetMapping(value ="/{entity}/{entityId}/addresses/delete/{addressKey}")
+  public String delete(@PathVariable("entity") String entity,
+                       @PathVariable("entityId") String entityId,
                        @PathVariable AddressKey addressKey) {
     Address address = addressRepository.findById(addressKey)
         .orElseThrow(() -> new IllegalArgumentException("Invalid address " +

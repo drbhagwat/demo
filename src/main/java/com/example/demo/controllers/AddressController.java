@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
@@ -47,37 +48,34 @@ public class AddressController {
     return "address/address-index";
   }
 
-  @GetMapping("/{entity}/{entityId}/addresses/add")
-  public String add(@PathVariable("entity") String entity,
-                    @PathVariable("entityId") String entityId,
+  @GetMapping("/addresses/add")
+  public String add(@RequestParam("companyCode") String companyCode,
                     Model model) {
-    model.addAttribute(ENTITY, entity);
-    model.addAttribute(ENTITY_ID, entityId);
-    model.addAttribute("address", new Address());
+    Company existingCompany =
+        companyRepository.findById(companyCode)
+            .orElseThrow(() -> new IllegalArgumentException("Invalid " +
+                "Company Code" + companyCode));
+    Address address = new Address();
+    address.setCompany(existingCompany);
+    model.addAttribute("address", address);
     return ADD_ADDRESS;
   }
 
-
   @Transactional
-  @PostMapping("/{entity}/{entityId}/addresses/add")
-  public String add(@PathVariable("entity") String entity,
-                    @PathVariable("entityId") String entityId,
-                    @Valid Address address,
-                    BindingResult result) throws Exception {
+  @PostMapping("/addresses/add")
+  public String add(@Valid Address address,
+                    Errors errors) throws Exception {
 
-    if (result.hasErrors()) {
+    if (errors.hasErrors()) {
       return ADD_ADDRESS;
     }
-    Company existingCompany = companyRepository.findById(entityId)
-        .orElseThrow(() -> new IllegalArgumentException("Invalid Entity Id:" + entityId));
-    address.setCompany(existingCompany);
 
     // get the list of current addresses from the db.
     List<Address> addresses = addressRepository.findAll();
 
     // no address in db and current address both are not primary
     if (isNoAddressPrimary(addresses) && (!address.getIsPrimary())) {
-      result.rejectValue("isPrimary", "isPrimary.missing");
+      errors.rejectValue("isPrimary", "isPrimary.missing");
       return ADD_ADDRESS;
     }
     // if current address is primary
@@ -108,7 +106,7 @@ public class AddressController {
   public String update(@PathVariable("entity") String entity,
                        @PathVariable("entityId") String entityId,
                        @PathVariable("addressKey") AddressKey addressKey,
-                       @ModelAttribute @Valid Address address,
+                       @Valid Address address,
                        BindingResult result) {
     address.setAddressKey(addressKey);
 
@@ -143,7 +141,7 @@ public class AddressController {
   }
 
   @Transactional
-  @GetMapping(value ="/{entity}/{entityId}/addresses/delete/{addressKey}")
+  @GetMapping(value = "/{entity}/{entityId}/addresses/delete/{addressKey}")
   public String delete(@PathVariable("entity") String entity,
                        @PathVariable("entityId") String entityId,
                        @PathVariable AddressKey addressKey) {

@@ -38,19 +38,27 @@
                 <td th:text="${company.code}"></td>
                 <td th:text="${company.name}"></td>
                 <td th:text="${company.description}"></td>
-                <td><a th:href="@{/companies/update/{companyCode}(companyCode=${company.code})}"
-                       class="btn btn-warning"><i class="fas fa-user-edit ml-2"></i></a></td>
-                <td><a th:href="@{/companies/delete/{companyCode}(companyCode=${company.code})}"
-                       class="btn btn-danger"><i class="fas fa-user-times ml-2"></i></a></td>
-                <td><a th:href="@{/addresses/add(companyCode=${company.code})}"
-                       class="btn btn-secondary"><i class="fas fa-address-card"></i></a></td>
+                <td><a
+                    th:href="@{/companies/update/{companyCode}(companyCode=${company.code})}"
+                    class="btn btn-warning"><i
+                    class="fas fa-user-edit ml-2"></i></a></td>
+                <td><a
+                    th:href="@{/companies/delete/{companyCode}(companyCode=${company.code})}"
+                    class="btn btn-danger"><i
+                    class="fas fa-user-times ml-2"></i></a></td>
+                <td><a
+                    th:href="@{/addresses/{companyCode}(companyCode=${company.code})}"
+                    class="btn btn-secondary"><i
+                    class="fas fa-address-card"></i></a></td>
               </tr>
               </tbody>
             </table>
             <hr>
             <ul class="nav nav-pills">
-              <li class="nav-item" th:each="i : ${#numbers.sequence(0, companies.totalPages-1)}">
-                <a th:href="@{/companies/(pageNo=${i})}" th:text="${i}" class="nav-link"
+              <li class="nav-item"
+                  th:each="i : ${#numbers.sequence(0, companies.totalPages-1)}">
+                <a th:href="@{/companies/(pageNo=${i})}" th:text="${i}"
+                   class="nav-link"
                    th:classappend="${currentPage} == ${i} ? 'active' : ''"></a>
               </li>
             </ul>

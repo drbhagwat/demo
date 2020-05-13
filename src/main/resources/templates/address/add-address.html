@@ -14,10 +14,9 @@
       <h3> Add Address</h3>
       <div class="col-md-10">
         <form action="#"
-              th:action=
-                  "@{/addresses/add}"
+              th:action="@{/addresses/add/{companyCode}(companyCode=${companyCode})}"
               th:object="${address}"
-              method="post">
+              method="POST">
           <div class="row">
             <div class="form-group col-md-8">
               <label for="address" class="col-form-label">Address</label>

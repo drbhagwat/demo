@@ -12,18 +12,18 @@
   <div class="container my-2">
     <div class="card">
       <div class="card-body">
-        <h1 th:text="@{${entity} + ' - Address Master:'}"></h1>
+        <h1 th:text="@{Address Master:}"></h1>
         <div class="container">
           <p class="my-5">
-            <a th:href=
-                   "@{/{entity}/{entityId}/addresses/add(entity=${entity}, entityId=${entityId})"
-               class="btn btn-success"> <i
+            <a
+                th:href="@{/addresses/add/{companyCode}(companyCode=${companyCode})}"
+                class="btn btn-success"> <i
                 class="fas fa-user-plus ml-2"> </i> Add Address </a>
           </p>
-          <div th:if="${addresses == 'empty'}" class="col-md-10">
+          <div th:if="${addressList == 'empty'}" class="col-md-10">
             <h2>No Addresses yet! You could add one.</h2>
           </div>
-          <div th:if="${addresses != 'empty'}" class="col-md-10">
+          <div th:if="${addressList != 'empty'}" class="col-md-10">
             <table class="table table-bordered table-striped">
               <thead class="thead-dark">
               <tr>
@@ -38,7 +38,7 @@
               </tr>
               </thead>
               <tbody>
-              <tr th:each="address : ${addresses}">
+              <tr th:each="address : ${addressList}">
                 <td th:text="${address.addressKey.address}"></td>
                 <td th:text="${address.address2}"></td>
                 <td th:text="${address.addressKey.city}"></td>
@@ -49,11 +49,11 @@
                          th:checked="${address.isPrimary}"/>
                 </td>
                 <td><a th:href=
-                           "@{/{entity}/{entityId}/addresses/update/{addressKey}(entity=${entity}, entityId=${entityId}, (addressKey=${address.addressKey}))}"
+                           "@{/addresses/update/{companyCode}/{addressKey}(companyCode=${companyCode}, addressKey=${address.addressKey})}"
                        class="btn btn-primary"><i
                     class="fas fa-user-edit ml-2"></i></a></td>
                 <td><a th:href=
-                           "@{/{entity}/{entityId}/addresses/delete/{addressKey}(entity=${entity}, entityId=${entityId}, (addressKey=${address.addressKey}))}"
+                           "@{/addresses/delete/{companyCode}/{addressKey}(companyCode=${companyCode}, addressKey=${address.addressKey})}"
                        class="btn btn-primary"><i
                     class="fas fa-user-times ml-2"></i></a></td>
               </tr>

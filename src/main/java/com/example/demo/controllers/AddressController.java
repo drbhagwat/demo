@@ -8,15 +8,16 @@ import com.example.demo.repositories.CompanyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
+@RequestMapping("/addresses")
 public class AddressController {
   @Autowired
   private AddressRepository addressRepository;
@@ -24,32 +25,33 @@ public class AddressController {
   @Autowired
   private CompanyRepository companyRepository;
 
-  private static final String ADDRESS_HOME = "redirect:/{entity}/{entityId" +
-      "}/addresses";
-  private static final String ENTITY = "entity";
-  private static final String ENTITY_ID = "entityId";
-  private static final String ADDRESS_KEY = "addressKey";
+  private static final String ADDRESS_INDEX = "address/address-index";
   private static final String UPDATE_ADDRESS = "address/update-address";
   private static final String ADD_ADDRESS = "address/add-address";
 
-  @GetMapping(value = "/{entity}/{entityId}/addresses")
-  public String getAll(@PathVariable("entity") String entity,
-                       @PathVariable("entityId") String entityId,
-                       Model model) {
-    List<Address> addresses = addressRepository.findAll();
-    model.addAttribute(ENTITY, entity);
-    model.addAttribute(ENTITY_ID, entityId);
+  @GetMapping("/{companyCode}")
+  public String getAll(@PathVariable("companyCode") String companyCode,
+                       Model model) throws Exception {
+    Optional<Company> company = companyRepository.findById(companyCode);
 
-    if (addresses.isEmpty()) {
-      model.addAttribute("addresses", "empty");
+    if (company.isEmpty()) {
+      throw new Exception("Invalid Company Code " + companyCode);
     } else {
-      model.addAttribute("addresses", addresses);
+      model.addAttribute("companyCode", companyCode);
+      List<Address> addresses =
+          addressRepository.findByCompany(company.get());
+
+      if (addresses.isEmpty()) {
+        model.addAttribute("addressList", "empty");
+      } else {
+        model.addAttribute("addressList", addresses);
+      }
     }
-    return "address/address-index";
+    return ADDRESS_INDEX;
   }
 
-  @GetMapping("/addresses/add")
-  public String add(@RequestParam("companyCode") String companyCode,
+  @GetMapping("/add/{companyCode}")
+  public String add(@PathVariable("companyCode") String companyCode,
                     Model model) {
     Company existingCompany =
         companyRepository.findById(companyCode)
@@ -57,108 +59,95 @@ public class AddressController {
                 "Company Code" + companyCode));
     Address address = new Address();
     address.setCompany(existingCompany);
+    model.addAttribute("companyCode", companyCode);
     model.addAttribute("address", address);
     return ADD_ADDRESS;
   }
 
   @Transactional
-  @PostMapping("/addresses/add")
-  public String add(@Valid Address address,
+  @PostMapping("/add/{companyCode}")
+  public String add(@PathVariable("companyCode") String companyCode,
+                    @ModelAttribute @Valid Address address,
                     Errors errors) throws Exception {
-
     if (errors.hasErrors()) {
       return ADD_ADDRESS;
     }
+    Optional<Company> optionalCompany = companyRepository.findById(companyCode);
 
-    // get the list of current addresses from the db.
-    List<Address> addresses = addressRepository.findAll();
+    if (optionalCompany.isEmpty()) {
+      throw new Exception("Invalid Company Code" + companyCode);
+    } else {
+      Company company = optionalCompany.get();
+      List<Address> addresses =
+          addressRepository.findByCompany(company);
 
-    // no address in db and current address both are not primary
-    if (isNoAddressPrimary(addresses) && (!address.getIsPrimary())) {
-      errors.rejectValue("isPrimary", "isPrimary.missing");
-      return ADD_ADDRESS;
+      // no address in db and current address both are not primary
+      if (isNoAddressPrimary(addresses) && (!address.getIsPrimary())) {
+        errors.rejectValue("isPrimary", "isPrimary.missing");
+        return ADD_ADDRESS;
+      }
+      // if current address is primary
+      if (address.getIsPrimary()) {
+        makeExistingPrimaryAsSecondary(addresses);
+      }
+      address.setCompany(company);
+      addressRepository.save(address);
     }
-    // if current address is primary
-    if (address.getIsPrimary()) {
-      makeExistingPrimaryAsSecondary(addresses);
-    }
-    addressRepository.save(address);
-    return ADDRESS_HOME;
+    return "redirect:/addresses/" + companyCode;
   }
 
-  @GetMapping("/{entity}/{entityId}/addresses/update/{addressKey}")
-  public String update(@PathVariable("entity") String entity,
-                       @PathVariable("entityId") String entityId,
+  @GetMapping("/update/{companyCode}/{addressKey}")
+  public String update(@PathVariable("companyCode") String companyCode,
                        @PathVariable("addressKey") AddressKey addressKey,
                        Model model) {
     Address existingAddress = addressRepository.findById(addressKey)
         .orElseThrow(() -> new IllegalArgumentException("Invalid address " +
             "key:" + addressKey));
     model.addAttribute("address", existingAddress);
-    model.addAttribute(ENTITY, entity);
-    model.addAttribute(ENTITY_ID, entityId);
-//    model.addAttribute(ADDRESS_KEY, addressKey);
+    model.addAttribute("companyCode", companyCode);
     return UPDATE_ADDRESS;
   }
 
   @Transactional
-  @PostMapping("/{entity}/{entityId}/addresses/update/{addressKey}")
-  public String update(@PathVariable("entity") String entity,
-                       @PathVariable("entityId") String entityId,
+  @PostMapping("/update/{companyCode}/{addressKey}")
+  public String update(@PathVariable("companyCode") String companyCode,
                        @PathVariable("addressKey") AddressKey addressKey,
-                       @Valid Address address,
-                       BindingResult result) {
-    address.setAddressKey(addressKey);
-
-    if (result.hasErrors()) {
+                       @ModelAttribute @Valid Address address,
+                       Errors errors) throws Exception {
+    if (errors.hasErrors()) {
       return UPDATE_ADDRESS;
-    }
-    Company existingCompany = companyRepository.findById(entityId)
-        .orElseThrow(() -> new IllegalArgumentException("Invalid Entity Id:" + entityId));
-    address.setCompany(existingCompany);
-
-    // get the list of current addresses from the db.
-    List<Address> addresses = addressRepository.findAll();
-
-    // only one address in db (current one) which is not primary
-    if ((addresses.size() == 1) && (!address.getIsPrimary())) {
-      result.rejectValue("isPrimary", "isPrimary.missing");
-      return UPDATE_ADDRESS;
-    }
-
-    // no address in db and current address both are not primary
-    if (isNoAddressPrimary(addresses) && (!address.getIsPrimary())) {
-      result.rejectValue("isPrimary", "isPrimary.missing");
-      return ADD_ADDRESS;
-    }
-
-    // if the current address is mentioned as primary
-    if (address.getIsPrimary()) {
-      makeExistingPrimaryAsSecondary(addresses);
     }
     addressRepository.save(address);
-    return ADDRESS_HOME;
+    return "redirect:/addresses/" + companyCode;
   }
 
   @Transactional
-  @GetMapping(value = "/{entity}/{entityId}/addresses/delete/{addressKey}")
-  public String delete(@PathVariable("entity") String entity,
-                       @PathVariable("entityId") String entityId,
-                       @PathVariable AddressKey addressKey) {
+  @GetMapping("/delete/{companyCode}/{addressKey}")
+  public String delete(@PathVariable("companyCode") String companyCode,
+                       @PathVariable AddressKey addressKey) throws Exception {
     Address address = addressRepository.findById(addressKey)
         .orElseThrow(() -> new IllegalArgumentException("Invalid address " +
             "key:" + addressKey));
 
-    // get the list of current addresses from the db.
-    List<Address> addresses = addressRepository.findAll();
-    addresses.remove(address);
+    Optional<Company> optionalCompany = companyRepository.findById(companyCode);
 
-    // if there are other addresses in db and none of them is primary
-    if (((addresses.size() != 0)) && isNoAddressPrimary(addresses)) {
-      return "address/delete-address";
+    if (optionalCompany.isEmpty()) {
+      throw new Exception("Invalid Company Code" + companyCode);
+    } else {
+      Company company = optionalCompany.get();
+
+      // get the list of addresses for the curretn company from the db.
+      List<Address> addresses = addressRepository.findByCompany(company);
+      addresses.remove(address);
+
+      // if there are other addresses in db and none of them is primary
+      if (((addresses.size() != 0)) && isNoAddressPrimary(addresses)) {
+        // do not delete and display an appropriate message
+        return "address/delete-address";
+      }
+      addressRepository.delete(address);
     }
-    addressRepository.delete(address);
-    return ADDRESS_HOME;
+    return "redirect:/addresses/" + companyCode;
   }
 
   private boolean isNoAddressPrimary(List<Address> addresses) {

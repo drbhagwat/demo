@@ -15,7 +15,7 @@
       <div class="col-md-8">
         <form action="#"
         th:action =
-        "@{/{entity}/{entityId}/addresses/update/{addressKey}(entity=${entity}, entityId=${entityId}, (addressKey=${address.addressKey}))}"
+        "@{/addresses/update/{companyCode}/{addressKey}(companyCode=${companyCode}},addressKey=${address.addressKey})}"
               th:object="${address}" method="post">
           <div class="row">
             <div class="form-group col-md-8">

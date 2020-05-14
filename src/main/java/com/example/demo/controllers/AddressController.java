@@ -30,6 +30,16 @@ public class AddressController {
   private static final String ADD_ADDRESS = "address/add-address";
   private static final String DELETE_ADDRESS = "address/delete-address";
 
+  @GetMapping()
+  public Address get(AddressKey addressKey) {
+    Optional<Address> optionalAddress = addressRepository.findById(addressKey);
+
+    if (optionalAddress.isEmpty()) {
+      return null;
+    }
+    return optionalAddress.get();
+  }
+
   @GetMapping("/{companyCode}")
   public String getAll(@PathVariable("companyCode") String companyCode,
                        Model model) throws Exception {
@@ -67,32 +77,41 @@ public class AddressController {
   @Transactional
   @PostMapping("/add/{companyCode}")
   public String add(@PathVariable("companyCode") String companyCode,
-                    @ModelAttribute @Valid Address address,
+                    @ModelAttribute("address") @Valid Address address,
                     Errors errors) throws Exception {
     if (errors.hasErrors()) {
       return ADD_ADDRESS;
     }
-    Optional<Company> optionalCompany = companyRepository.findById(companyCode);
+    Company company = companyRepository.getOne(companyCode);
+    Address existingAddress = get(address.getAddressKey());
+    boolean isCurrentAddressPrimary = address.getIsPrimary();
 
-    if (optionalCompany.isEmpty()) {
-      throw new Exception("Invalid Company Code" + companyCode);
-    } else {
-      Company company = optionalCompany.get();
-      List<Address> addresses =
-          addressRepository.findByCompany(company);
-
-      // no address in db and current address both are not primary
-      if (isNoAddressPrimary(addresses) && (!address.getIsPrimary())) {
+    if (existingAddress == null) { // there is no address yet
+      // current address is not primary
+      if (!isCurrentAddressPrimary) {
         errors.rejectValue("isPrimary", "isPrimary.missing");
         return ADD_ADDRESS;
       }
-      // if current address is primary
-      if (address.getIsPrimary()) {
-        makeExistingPrimaryAsSecondary(addresses);
+    } else { // there is at least one address already
+      List<Address> addressesinCompany =
+          addressRepository.findByCompany(company);
+
+      if (addressesinCompany.size() == 1) {
+        // current address is not primary
+        if (!isCurrentAddressPrimary) {
+          errors.rejectValue("isPrimary", "isPrimary.missing");
+          return ADD_ADDRESS;
+        }
+      } else {
+        // if current address is primary and there are other addresses,
+        // then make the other primary address as secondary automatically.
+        if (isCurrentAddressPrimary) {
+          makeExistingPrimaryAsSecondary(addressesinCompany);
+        }
       }
-      address.setCompany(company);
-      addressRepository.save(address);
     }
+    address.setCompany(company);
+    addressRepository.save(address);
     return "redirect:/addresses/" + companyCode;
   }
 
@@ -128,17 +147,19 @@ public class AddressController {
       Company company = optionalCompany.get();
       List<Address> addresses =
           addressRepository.findByCompany(company);
+      boolean isCurrentAddressPrimary = address.getIsPrimary();
 
       // no address in db and current address both are not primary
-      if (isNoAddressPrimary(addresses) && (!address.getIsPrimary())) {
+      if (!isCurrentAddressPrimary && isNoAddressPrimary(addresses)) {
         errors.rejectValue("isPrimary", "isPrimary.missing");
         return ADD_ADDRESS;
       }
-      // if current address is primary and that is the only address
-      if (address.getIsPrimary() && (addresses.size() > 1)) {
+      // if current address is primary and there are other addresses,
+      // then make the other primary address as secondary automatically.
+      if (isCurrentAddressPrimary && (addresses.size() > 0)) {
         makeExistingPrimaryAsSecondary(addresses);
       }
-      existingAddress.setIsPrimary(address.getIsPrimary());
+      existingAddress.setIsPrimary(isCurrentAddressPrimary);
       existingAddress.setAddress2(address.getAddress2());
       addressRepository.save(existingAddress);
     }

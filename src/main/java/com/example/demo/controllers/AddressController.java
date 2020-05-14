@@ -86,18 +86,30 @@ public class AddressController {
     Address existingAddress = get(address.getAddressKey());
     boolean isCurrentAddressPrimary = address.getIsPrimary();
 
-    if (existingAddress == null) { // there is no address yet
-      // current address is not primary
-      if (!isCurrentAddressPrimary) {
-        errors.rejectValue("isPrimary", "isPrimary.missing");
-        return ADD_ADDRESS;
+    if (existingAddress == null) { // this is a new address
+      List<Address> addressesinCompany =
+          addressRepository.findByCompany(company);
+
+      if (addressesinCompany.size() == 0) {
+        // there are no other addresses
+
+        if (!isCurrentAddressPrimary) {
+          errors.rejectValue("isPrimary", "isPrimary.missing");
+          return ADD_ADDRESS;
+        }
+      } else {
+        // if current address is primary, make other primary address
+        // secondary automatically.
+        if (isCurrentAddressPrimary) {
+          makeExistingPrimaryAsSecondary(addressesinCompany);
+        }
       }
     } else { // there is at least one address already
       List<Address> addressesinCompany =
           addressRepository.findByCompany(company);
 
       if (addressesinCompany.size() == 1) {
-        // current address is not primary
+
         if (!isCurrentAddressPrimary) {
           errors.rejectValue("isPrimary", "isPrimary.missing");
           return ADD_ADDRESS;

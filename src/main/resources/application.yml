@@ -60,7 +60,7 @@ logging:
 
 # following constants are for validation of various Json inputs and Exception handling.
 VALIDATION_FAILED: Validation Failed
-GIV_EXCEPTION: Giv Exception
+APP_EXCEPTION: Application Exception
 ALPHA_NUMERIC_REGEX: ^[ a-zA-Z0-9]*$
 
 

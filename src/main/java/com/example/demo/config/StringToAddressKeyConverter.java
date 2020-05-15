@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.config;
 
 import com.example.demo.models.AddressKey;
 import org.springframework.core.convert.converter.Converter;

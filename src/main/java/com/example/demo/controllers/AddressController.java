@@ -29,15 +29,12 @@ public class AddressController {
   private static final String UPDATE_ADDRESS = "address/update-address";
   private static final String ADD_ADDRESS = "address/add-address";
   private static final String DELETE_ADDRESS = "address/delete-address";
-  private static final String ADDRESS_NOT_FOUND = "address/address-not" +
-      "-found";
 
   @GetMapping()
   public Address get(AddressKey addressKey) {
     Optional<Address> optionalAddress = addressRepository.findById(addressKey);
 
     if (optionalAddress.isEmpty()) {
-      System.out.println("Returning null Came to the post method");
       return null;
     }
     return optionalAddress.get();
@@ -81,7 +78,7 @@ public class AddressController {
   @PostMapping("/add/{companyCode}")
   public String add(@PathVariable("companyCode") String companyCode,
                     @ModelAttribute("address") @Valid Address address,
-                    Errors errors) throws Exception {
+                    Errors errors) {
     if (errors.hasErrors()) {
       return ADD_ADDRESS;
     }
@@ -104,7 +101,7 @@ public class AddressController {
         if (isCurrentAddressPrimary) {
           // if the current address becomes the primary,
           // the existing primary becomes secondary.
-          makeExistingPrimaryAsSecondary(addressesinCompany);
+          makePrimaryAsSecondary(addressesinCompany);
         }
       }
     } else { // this address already exists
@@ -121,7 +118,7 @@ public class AddressController {
         if (isCurrentAddressPrimary) {
           // if the current address becomes the primary, make the
           // existing primary address secondary.
-          makeExistingPrimaryAsSecondary(addressesinCompany);
+          makePrimaryAsSecondary(addressesinCompany);
         }
       }
     }
@@ -138,7 +135,6 @@ public class AddressController {
         companyRepository.findById(companyCode)
             .orElseThrow(() -> new IllegalArgumentException("Invalid " +
                 "Company Code" + companyCode));
-
     Address existingAddress = addressRepository.findById(addressKey)
         .orElseThrow(() -> new IllegalArgumentException("Invalid address " +
             "key:" + addressKey));
@@ -175,7 +171,7 @@ public class AddressController {
       if (isCurrentAddressPrimary) {
         // if the current address becomes the primary, make the
         // existing primary address secondary.
-        makeExistingPrimaryAsSecondary(addressesinCompany);
+        makePrimaryAsSecondary(addressesinCompany);
       }
     }
     existingAddress.setIsPrimary(isCurrentAddressPrimary);
@@ -198,12 +194,12 @@ public class AddressController {
       throw new Exception("Invalid Company Code" + companyCode);
     } else {
       Company company = optionalCompany.get();
-      // get the list of addresses for the curretn company from the db.
+      // get the list of addresses for the current company from the db.
       List<Address> addresses = addressRepository.findByCompany(company);
       addresses.remove(address);
 
       // if there are other addresses in db and none of them is primary
-      if (((addresses.size() == 0)) && isNoAddressPrimary(addresses)) {
+      if (((addresses.size() == 0)) || isNoAddressPrimary(addresses)) {
         // do not delete and display an appropriate message
         return DELETE_ADDRESS;
       }
@@ -220,20 +216,20 @@ public class AddressController {
 
       if (addresses.get(i).getIsPrimary().booleanValue()) {
         totalPrimaryAddresses++;
+        break;
       }
     }
     return totalPrimaryAddresses == 0;
   }
 
   @Transactional
-  private void makeExistingPrimaryAsSecondary(List<Address> addresses) {
+  private void makePrimaryAsSecondary(List<Address> addresses) {
     int size = addresses.size();
 
     for (int i = 0; i < size; i++) {
       Address address = addresses.get(i);
 
-      // there is one address in address book which should be primary; change
-      // it to secondary
+      // make the only primary address in address book to secondary
       if (address.getIsPrimary().booleanValue()) {
         address.setIsPrimary(false);
         addressRepository.save(address);

@@ -29,12 +29,15 @@ public class AddressController {
   private static final String UPDATE_ADDRESS = "address/update-address";
   private static final String ADD_ADDRESS = "address/add-address";
   private static final String DELETE_ADDRESS = "address/delete-address";
+  private static final String ADDRESS_NOT_FOUND = "address/address-not" +
+      "-found";
 
   @GetMapping()
   public Address get(AddressKey addressKey) {
     Optional<Address> optionalAddress = addressRepository.findById(addressKey);
 
     if (optionalAddress.isEmpty()) {
+      System.out.println("Returning null Came to the post method");
       return null;
     }
     return optionalAddress.get();
@@ -83,30 +86,30 @@ public class AddressController {
       return ADD_ADDRESS;
     }
     Company company = companyRepository.getOne(companyCode);
-    Address existingAddress = get(address.getAddressKey());
-    boolean isCurrentAddressPrimary = address.getIsPrimary();
     List<Address> addressesinCompany =
         addressRepository.findByCompany(company);
+    Address existingAddress = get(address.getAddressKey());
+    boolean isCurrentAddressPrimary = address.getIsPrimary();
 
-    if (existingAddress == null) { // this is a new address
+    if (existingAddress == null) { // adding a new address
 
       if (addressesinCompany.size() == 0) {
-        // there are no other addresses
+        // there are no other addresses in the db
 
         if (!isCurrentAddressPrimary) {
           errors.rejectValue("isPrimary", "isPrimary.missing");
           return ADD_ADDRESS;
         }
-      } else { // there are other addresses
+      } else { // there are other addresses in the db
         if (isCurrentAddressPrimary) {
-          // if this is going to be the primary,
-          // make the existing primary as secondary.
+          // if the current address becomes the primary,
+          // the existing primary becomes secondary.
           makeExistingPrimaryAsSecondary(addressesinCompany);
         }
       }
     } else { // this address already exists
       if (addressesinCompany.size() == 1) {
-        // is this the only address?
+        // this is the only address
 
         if (!isCurrentAddressPrimary) {
           errors.rejectValue("isPrimary", "isPrimary.missing");
@@ -116,8 +119,8 @@ public class AddressController {
         // there are other addresses
 
         if (isCurrentAddressPrimary) {
-          // if this is going to be the primary make the existing primary
-          // address secondary.
+          // if the current address becomes the primary, make the
+          // existing primary address secondary.
           makeExistingPrimaryAsSecondary(addressesinCompany);
         }
       }
@@ -131,6 +134,11 @@ public class AddressController {
   public String update(@PathVariable("companyCode") String companyCode,
                        @PathVariable("addressKey") AddressKey addressKey,
                        Model model) {
+    Company existingCompany =
+        companyRepository.findById(companyCode)
+            .orElseThrow(() -> new IllegalArgumentException("Invalid " +
+                "Company Code" + companyCode));
+
     Address existingAddress = addressRepository.findById(addressKey)
         .orElseThrow(() -> new IllegalArgumentException("Invalid address " +
             "key:" + addressKey));
@@ -148,33 +156,31 @@ public class AddressController {
     if (errors.hasErrors()) {
       return UPDATE_ADDRESS;
     }
-    Optional<Company> optionalCompany = companyRepository.findById(companyCode);
+    Company company = companyRepository.findById(companyCode).get();
+    List<Address> addressesinCompany =
+        addressRepository.findByCompany(company);
+    Address existingAddress = get(address.getAddressKey());
+    boolean isCurrentAddressPrimary = address.getIsPrimary();
 
-    if (optionalCompany.isEmpty()) {
-      throw new Exception("Invalid Company Code" + companyCode);
-    } else {
-      Address existingAddress = addressRepository.findById(addressKey)
-          .orElseThrow(() -> new IllegalArgumentException("Invalid address " +
-              "key:" + addressKey));
-      Company company = optionalCompany.get();
-      List<Address> addresses =
-          addressRepository.findByCompany(company);
-      boolean isCurrentAddressPrimary = address.getIsPrimary();
+    if (addressesinCompany.size() == 1) {
+      // this is the only address
 
-      // no address in db and current address both are not primary
-      if (!isCurrentAddressPrimary && isNoAddressPrimary(addresses)) {
+      if (!isCurrentAddressPrimary) {
         errors.rejectValue("isPrimary", "isPrimary.missing");
-        return ADD_ADDRESS;
+        return UPDATE_ADDRESS;
       }
-      // if current address is primary and there are other addresses,
-      // then make the other primary address as secondary automatically.
-      if (isCurrentAddressPrimary && (addresses.size() > 0)) {
-        makeExistingPrimaryAsSecondary(addresses);
+    } else {
+      // there are other addresses
+
+      if (isCurrentAddressPrimary) {
+        // if the current address becomes the primary, make the
+        // existing primary address secondary.
+        makeExistingPrimaryAsSecondary(addressesinCompany);
       }
-      existingAddress.setIsPrimary(isCurrentAddressPrimary);
-      existingAddress.setAddress2(address.getAddress2());
-      addressRepository.save(existingAddress);
     }
+    existingAddress.setIsPrimary(isCurrentAddressPrimary);
+    existingAddress.setAddress2(address.getAddress2());
+    addressRepository.save(existingAddress);
     return "redirect:/addresses/" + companyCode;
   }
 
@@ -192,18 +198,17 @@ public class AddressController {
       throw new Exception("Invalid Company Code" + companyCode);
     } else {
       Company company = optionalCompany.get();
-
       // get the list of addresses for the curretn company from the db.
       List<Address> addresses = addressRepository.findByCompany(company);
       addresses.remove(address);
 
       // if there are other addresses in db and none of them is primary
-      if (((addresses.size() != 0)) && isNoAddressPrimary(addresses)) {
+      if (((addresses.size() == 0)) && isNoAddressPrimary(addresses)) {
         // do not delete and display an appropriate message
         return DELETE_ADDRESS;
       }
-      addressRepository.delete(address);
     }
+    addressRepository.delete(address);
     return "redirect:/addresses/" + companyCode;
   }
 

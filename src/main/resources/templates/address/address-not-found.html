@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{fragments/layout}">
+<head>
+  <meta charset="UTF-8">
+  <title>Address NotFound</title>
+</head>
+<body>
+<div layout:fragment="content" class="my-2">
+  <div class="container my-5">
+    <div class="card">
+      <div class="card-body">
+        <div class="col-md-10">
+          <h3 class="text-danger">
+            An address with the key
+            <span th:text="${addressKey}"></span>
+            doesn't exist! Please enter the correct key for the address
+            and
+            retry.</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

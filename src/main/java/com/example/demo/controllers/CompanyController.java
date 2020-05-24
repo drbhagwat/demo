@@ -53,8 +53,7 @@ public class CompanyController {
 
   @PostMapping("/add")
   public String add(@ModelAttribute @Valid Company company,
-                    BindingResult result,
-                    Model model) throws CompanyAlreadyExists {
+                    BindingResult result) throws CompanyAlreadyExists {
     if (result.hasErrors()) {
       return COMPANY_ADD_COMPANY;
     }

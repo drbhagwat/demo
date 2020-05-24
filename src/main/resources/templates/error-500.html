@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{fragments/layout}">
+<head>
+  <meta charset="UTF-8">
+  <title>Application Error Page</title>
+</head>
+<body>
+<div layout:fragment="content" class="my-2">
+  <div class="container my-5">
+    <div class="card">
+      <div class="card-body">
+        <div class="col-md-10">
+          <h3 class="text-danger">
+            <h1>There is an internal server error!</h1>
+            <h2>Please report this incident and our engineers will be glad
+              to work on it</h2>
+          </h3>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -13,5 +12,5 @@ import java.util.List;
 public class ErrorDetails {
 	private LocalDateTime timestamp;
 	private String message;
-	private List<String> details;
+	private String details;
 }

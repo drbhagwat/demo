@@ -22,9 +22,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
   public final ModelAndView handleAllExceptions(Exception ex, WebRequest request) {
     ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(),
         ex.getMessage(), ((ServletWebRequest)request).getRequest().getRequestURI());
-    ModelAndView mav = new ModelAndView();
-    mav.addObject("errorDetails", errorDetails);
-    mav.setViewName("error");
-    return mav;
+    ModelAndView modelAndView = new ModelAndView();
+    modelAndView.addObject("errorDetails", errorDetails);
+    modelAndView.setViewName("error");
+    return modelAndView;
   }
 }

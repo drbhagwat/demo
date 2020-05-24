@@ -16,6 +16,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .anyRequest().authenticated()
         .and()
         .oauth2Login()
-        .loginPage("/oauth_login");
+        .loginPage("/oauth_login").and()
+        .exceptionHandling().accessDeniedPage("/error-404");
   }
 }

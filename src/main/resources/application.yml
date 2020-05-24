@@ -30,8 +30,6 @@ spring:
     ansi:
       enabled: ALWAYS
 
-
-
   # Database
   datasource:
     initialization-mode: never
@@ -65,10 +63,7 @@ logging:
 
 
 # following constants are for validation of various Json inputs and Exception handling.
-VALIDATION_FAILED: Validation Failed
-APP_EXCEPTION: Application Exception
 ALPHA_NUMERIC_REGEX: ^[ a-zA-Z0-9]*$
-
 
 # following messages are for the core classes.
 CODE_MAX_LENGTH: 10

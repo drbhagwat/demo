@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/oauth_login")
+@RequestMapping("/home")
 public class LoginController {
   private static String authorizationRequestBaseUri
       = "oauth2/authorization";
@@ -25,6 +25,7 @@ public class LoginController {
 
   @GetMapping()
   public String getLoginPage(Model model) {
+
     Iterable<ClientRegistration> clientRegistrations = null;
     ResolvableType type = ResolvableType.forInstance(clientRegistrationRepository)
         .as(Iterable.class);
@@ -38,6 +39,6 @@ public class LoginController {
         oauth2AuthenticationUrls.put(registration.getClientName(),
             authorizationRequestBaseUri + "/" + registration.getRegistrationId()));
     model.addAttribute("urls", oauth2AuthenticationUrls);
-    return "oauth_login";
+    return "home";
   }
 }

@@ -22,7 +22,6 @@ public class Company extends BasicLogger<String> {
   @NotBlank(message = "{company.name.cannotbeblank}")
   private String name;
 
-  @NotBlank(message = "{company.description.cannotbeblank}")
   private String description;
 
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)

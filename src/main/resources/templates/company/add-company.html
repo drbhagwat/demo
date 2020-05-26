@@ -18,20 +18,22 @@
                 method="post">
             <div class="row">
               <div class="form-group col-md-8">
-                <label for="code" class="col-form-label">Code</label> <input
+                <label for="code" class="col-form-label">Code -
+                  Mandatory</label> <input
                   type="text"
-                  th:field="*{code}"
+                  th:field="*{code}" th:required="required"
                   class="form-control"
                   id="code"
-                  placeholder="Enter a unique company code">
+                  placeholder="Enter a unique code for the company">
                 <span
                     th:if="${#fields.hasErrors('code')}" th:errors="*{code}"
                     class="text-danger"></span>
               </div>
               <div class="form-group col-md-8">
-                <label for="name" class="col-form-label">Name</label> <input
+                <label for="name" class="col-form-label">Name -
+                  Mandatory</label> <input
                   type="text"
-                  th:field="*{name}"
+                  th:field="*{name}" th:required="required"
                   class="form-control"
                   id="name"
                   placeholder="Enter the name of the company">
@@ -41,12 +43,13 @@
               </div>
               <div class="form-group col-md-8">
                 <label for="description"
-                       class="col-form-label">Description</label> <input
+                       class="col-form-label">Description - Optional</label>
+                <input
                   type="text"
                   th:field="*{description}"
                   class="form-control"
                   id="description"
-                  placeholder="Enter the description of company">
+                  placeholder="Enter description of the company (if any)">
                 <span
                     th:if="${#fields.hasErrors('description')}"
                     th:errors="*{description}"
@@ -54,7 +57,7 @@
               </div>
               <div class="col-md-6">
                 <button class="btn btn-success" type="submit">
-                  <i class=" fas fa-user-plus ml-2"> </i>
+                  <i class=" fas fa-user-plus"> </i>
                   Add
                 </button>
               </div>

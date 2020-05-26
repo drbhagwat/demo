@@ -14,31 +14,42 @@
       <div class="card-body">
         <h1>Company Master - Update Company</h1>
         <div class="container">
-          <form th:action="@{/companies/update/{companyCode}(companyCode=${company.code})}"
-                th:object="${company}" method="post">
+          <form
+              th:action="@{/companies/update/{companyCode}(companyCode=${company.code})}"
+              th:object="${company}" method="post">
             <div class="row">
               <div class="form-group col-md-8">
-                <label for="code" class="col-form-label">Code</label> <input type="text" th:field="*{code}"
-                                                                             class="form-control" id="code"
-                                                                             placeholder="Enter a unique company code"
-                                                                             readonly> <span
-                  th:if="${#fields.hasErrors('code')}" th:errors="*{code}" class="text-danger"></span>
+                <label for="code" class="col-form-label">Code -
+                  Mandatory</label> <input
+                  type="text" th:field="*{code}" th:required="required"
+                  class="form-control" id="code"
+                  placeholder="Enter a unique code for the company"
+                  readonly> <span
+                  th:if="${#fields.hasErrors('code')}" th:errors="*{code}"
+                  class="text-danger"></span>
               </div>
               <div class="form-group col-md-8">
-                <label for="name" class="col-form-label">Name</label> <input type="text" th:field="*{name}"
-                                                                             class="form-control" id="name"
-                                                                             placeholder="Enter the name of the company">
+                <label for="name" class="col-form-label">Name -
+                  Mandatory</label> <input
+                  type="text" th:field="*{name}" th:required="required"
+                  class="form-control" id="name"
+                  placeholder="Enter the name of the company">
                 <span
-                    th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></span>
+                    th:if="${#fields.hasErrors('name')}" th:errors="*{name}"
+                    class="text-danger"></span>
               </div>
               <div class="form-group col-md-8">
-                <label for="description" class="col-form-label">Description</label> <input type="text"
-                                                                                           th:field="*{description}"
-                                                                                           class="form-control"
-                                                                                           id="description"
-                                                                                           placeholder="Enter the description of company">
+                <label for="description"
+                       class="col-form-label">Description - Optional</label>
+                <input
+                    type="text"
+                    th:field="*{description}"
+                    class="form-control"
+                    id="description"
+                    placeholder="Enter description of the company (if any)">
                 <span
-                    th:if="${#fields.hasErrors('description')}" th:errors="*{description}" class="text-danger"></span>
+                    th:if="${#fields.hasErrors('description')}"
+                    th:errors="*{description}" class="text-danger"></span>
               </div>
               <div class="col-md-6">
                 <button class="btn btn-warning" type="submit">

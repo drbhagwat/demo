@@ -5,22 +5,18 @@
       layout:decorate="~{fragments/layout}">
 <head>
   <meta charset="UTF-8">
-  <title>Application Error Page</title>
+  <title>Application Redirect Page</title>
   <script type="text/javascript">
-    $.get("/user", function(data) {
-        $("#user").html(data.name);
-        $(".authenticated").show()
-    });
 </script>
 </head>
 <body>
 <div layout:fragment="content" class="my-2">
-  <div class="container authenticated my-5" style="display:none">
+  <div class="container my-5">
     <div class="card">
       <div class="card-body">
         <div class="col-md-10">
           <h4>
-            Logged in as: <span id="user"></span>
+            You are Logged in successfully
           </h4>
         </div>
       </div>

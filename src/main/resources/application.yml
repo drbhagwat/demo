@@ -11,9 +11,11 @@ spring:
           facebook:
             client-id: 242340783448984
             client-secret: a247b468f7125a83932d141a10069144
+            redirectUri: "http://localhost:8080/loginSuccess"
           github:
             clientId: 62e8ccdd4cf568d81d70
             clientSecret: fa24169e2d99a188e390bbfdd6bf734c99829623
+            redirectUri: "http://localhost:8080/loginSuccess"
   thymeleaf:
     cache: false
   # Server configuration

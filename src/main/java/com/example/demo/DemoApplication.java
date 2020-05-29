@@ -12,8 +12,10 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
+import org.springframework.ui.Model;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collections;
 import java.util.Map;
@@ -42,12 +44,6 @@ class DataSetup implements ApplicationRunner {
 
 @SpringBootApplication
 public class DemoApplication {
-  @GetMapping("/user")
-  public Map<String, Object> user(@AuthenticationPrincipal OAuth2User principal) {
-    return Collections.singletonMap("name", principal.getAttribute("name"));
-  }
-
-
   private static final Logger LOGGER = LoggerFactory.getLogger(DemoApplication.class);
 
   public static void main(String[] args) {

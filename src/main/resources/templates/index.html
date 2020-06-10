@@ -6,6 +6,22 @@
 <head>
   <meta charset="UTF-8">
   <title>Application Error Page</title>
+  <script type="text/javascript">
+    $.get("/user", function(data) {
+        $("#user").html(data.name);
+        $(".unauthenticated").hide()
+        $(".authenticated").show()
+    });
+    var logout = function() {
+    $.post("/logout", function() {
+        $("#user").html('');
+        $(".unauthenticated").show();
+        $(".authenticated").hide();
+    })
+    return true;
+}
+
+  </script>
 </head>
 <body>
 <div layout:fragment="content" class="my-2">
@@ -13,9 +29,18 @@
     <div class="card">
       <div class="card-body">
         <div class="col-md-10">
-          <h4 class="text-info text-center">Welcome to whizspider! Please click
-            the Login drop-down from the main menu above and login with your
-            existing social login (either google, or facebook, or github) </h4>
+          <h4 class="text-info text-center">Welcome to whizspider!
+            <div class="container unauthenticated">
+              With GitHub: <a href="/oauth2/authorization/github">click here</a>
+            </div>
+            <div class="container authenticated" style="display:none">
+              Logged in as: <span id="user"></span>
+              <div>
+                <button onClick="logout()" class="btn btn-primary">Logout
+                </button>
+              </div>
+            </div>
+          </h4>
         </div>
       </div>
     </div>

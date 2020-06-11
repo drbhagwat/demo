@@ -68,6 +68,13 @@ public class DemoApplication {
     return "redirect:/login";
   }
 
+  @GetMapping("/auth-error")
+  public String error(HttpServletRequest request) {
+    String message = (String) request.getSession().getAttribute("error.message");
+    request.getSession().removeAttribute("error.message");
+    return message;
+  }
+
   public static void main(String[] args) {
     SpringApplication.run(DemoApplication.class, args);
     LOGGER.debug("This is a debug message");

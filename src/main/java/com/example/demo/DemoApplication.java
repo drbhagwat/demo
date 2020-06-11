@@ -59,15 +59,8 @@ public class DemoApplication {
     return Collections.singletonMap("name", name);
   }
 
-  @GetMapping("/error")
-  public String error(HttpServletRequest request) {
-    String message = (String) request.getSession().getAttribute("error.message");
-    request.getSession().removeAttribute("error.message");
-    return message;
-  }
-
-  @RequestMapping(value = "/logout", method = RequestMethod.GET)
-  public String logoutPage(HttpServletRequest request, HttpServletResponse response) {
+  @GetMapping("/logout")
+  public String logout(HttpServletRequest request, HttpServletResponse response) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     if (auth != null) {
       new SecurityContextLogoutHandler().logout(request, response, auth);

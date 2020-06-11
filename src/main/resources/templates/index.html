@@ -21,7 +21,7 @@
       return true;
     }
 
-    $.get("/auth-error", function(data) {
+    $.get("/authenticationError", function(data) {
     if (data) {
         $(".error").html(data);
     } else {
@@ -50,7 +50,7 @@
   <div class="container my-5">
     <div class="card">
       <div class="card-body">
-        <h3 class="col-md-10">
+        <div class="col-md-10">
           <div class="container unauthenticated">Welcome! Please
             sign-in with any of your existing social login credentials:
             <br/>
@@ -80,7 +80,7 @@
             </button>
           </div>
           <div class="container text-danger error"></div>
-        </h3>
+        </div>
       </div>
     </div>
   </div>

@@ -35,6 +35,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .oauth2Login(o -> o
             .failureHandler(customAuthenticationFailureHandler())
         );
-    http.csrf().disable();
   }
 }

@@ -2,8 +2,6 @@ package com.example.demo;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.MessageSource;
@@ -14,11 +12,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-import org.springframework.stereotype.Component;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,8 +21,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Collections;
 import java.util.Map;
 
-@Component
-class DataSetup implements ApplicationRunner {
+@SpringBootApplication
+@RestController
+public class DemoApplication {
   @Bean
   public MessageSource messageSource() {
     ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
@@ -43,14 +39,6 @@ class DataSetup implements ApplicationRunner {
     return bean;
   }
 
-  @Override
-  public void run(ApplicationArguments args) {
-  }
-}
-
-@SpringBootApplication
-@RestController
-public class DemoApplication {
   private static final Logger LOGGER = LoggerFactory.getLogger(DemoApplication.class);
 
   @GetMapping("/user")
@@ -65,11 +53,11 @@ public class DemoApplication {
     if (auth != null) {
       new SecurityContextLogoutHandler().logout(request, response, auth);
     }
-    return "redirect:/login";
+    return "redirect:/login?logout";
   }
 
-  @GetMapping("/auth-error")
-  public String error(HttpServletRequest request) {
+  @GetMapping("/authenticationError")
+  public String authenticationError(HttpServletRequest request) {
     String message = (String) request.getSession().getAttribute("error.message");
     request.getSession().removeAttribute("error.message");
     return message;

@@ -14,7 +14,6 @@ import java.util.Map;
 
 public class CustomAuthenticationFailureHandler
     implements AuthenticationFailureHandler {
-
   private ObjectMapper objectMapper = new ObjectMapper();
 
   @Override
@@ -23,7 +22,6 @@ public class CustomAuthenticationFailureHandler
       HttpServletResponse response,
       AuthenticationException exception)
       throws IOException {
-
     response.setStatus(HttpStatus.UNAUTHORIZED.value());
     Map<String, Object> data = new HashMap<>();
     data.put(
@@ -32,6 +30,9 @@ public class CustomAuthenticationFailureHandler
     data.put(
         "exception",
         exception.getMessage());
+    data.put(
+        "uri",
+        request.getRequestURI());
     response.getOutputStream()
         .println(objectMapper.writeValueAsString(data));
   }

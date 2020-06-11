@@ -4,23 +4,45 @@
       xmlns="http://www.w3.org/1999/xhtml"
       layout:decorate="~{fragments/layout}">
 <head>
-  <meta charset="UTF-8">
-  <title>Application Error Page</title>
+  <title>Index Page</title>
   <script type="text/javascript">
     $.get("/user", function(data) {
         $("#user").html(data.name);
         $(".unauthenticated").hide()
         $(".authenticated").show()
     });
+
     var logout = function() {
-    $.post("/logout", function() {
+      $.get("/logout", function() {
         $("#user").html('');
         $(".unauthenticated").show();
         $(".authenticated").hide();
-    })
-    return true;
-}
+      })
+      return true;
+    }
 
+    $.get("/error", function(data) {
+    if (data) {
+        $(".error").html(data);
+    } else {
+        $(".error").html('');
+    }
+});
+  </script>
+  <script type="text/javascript" src="/webjars/js-cookie/js.cookie.js">
+    $.ajaxSetup({
+      beforeSend : function(xhr, settings) {
+      if (settings.type == 'POST' || settings.type == 'PUT'
+        || settings.type == 'DELETE') {
+      if (!(/^http:.*/.test(settings.url) || /^https:.*/
+        .test(settings.url))) {
+        // Only send the token to relative URLs i.e. locally.
+        xhr.setRequestHeader("X-XSRF-TOKEN",
+          Cookies.get('XSRF-TOKEN'));
+        }
+      }
+    }
+  });
   </script>
 </head>
 <body>
@@ -28,20 +50,37 @@
   <div class="container my-5">
     <div class="card">
       <div class="card-body">
-        <div class="col-md-10">
-          <h4 class="text-info text-center">Welcome to whizspider!
-            <div class="container unauthenticated">
-              With GitHub: <a href="/oauth2/authorization/github">click here</a>
+        <h3 class="col-md-10">
+          <div class="container unauthenticated">Welcome! Please
+            sign-in with any of your existing social login credentials:
+            <br/>
+            <br/>
+            <div style="text-align:left">
+              <i class="fab fa-github-square"></i>
+              <a href="/oauth2/authorization/github">&nbsp;GitHub</a>
+              <br/>
+              <br/>
+              <i class="fab fa-google-plus-square"></i>
+              <a href="/oauth2/authorization/google">&nbsp;Google</a>
+              <br/>
+              <br/>
+              <i class="fab fa-facebook-square"></i>
+              <a href="/oauth2/authorization/facebook">&nbsp;Facebook</a>
+              <br/>
+              <br/>
             </div>
-            <div class="container authenticated" style="display:none">
-              Logged in as: <span id="user"></span>
-              <div>
-                <button onClick="logout()" class="btn btn-primary">Logout
-                </button>
-              </div>
-            </div>
-          </h4>
-        </div>
+          </div>
+          <div class="container authenticated"
+               style="text-align:left; display:none">
+            You are logged in as: <span id="user"></span>
+            <br/>
+            <br/>
+            <button style="text-align:center" onClick="logout()" class="btn
+              btn-primary">Logout
+            </button>
+          </div>
+          <div class="container text-danger error"></div>
+        </h3>
       </div>
     </div>
   </div>

@@ -5,6 +5,8 @@
       layout:decorate="~{fragments/layout}">
 <head>
   <title>Index Page</title>
+
+  <script type="text/javascript" src="/webjars/js-cookie/js.cookie.js"></script>
   <script type="text/javascript">
     $.get("/user", function(data) {
         $("#user").html(data.name);
@@ -12,37 +14,28 @@
         $(".authenticated").show()
     });
 
-    var logout = function() {
-      $.get("/logout", function() {
-        $("#user").html('');
-        $(".unauthenticated").show();
-        $(".authenticated").hide();
-      })
-      return true;
-    }
-
     $.get("/authenticationError", function(data) {
-    if (data) {
+      if (data) {
         $(".error").html(data);
-    } else {
+      } else {
         $(".error").html('');
-    }
-});
-  </script>
-  <script type="text/javascript" src="/webjars/js-cookie/js.cookie.js">
+      }
+    });
+
     $.ajaxSetup({
       beforeSend : function(xhr, settings) {
       if (settings.type == 'POST' || settings.type == 'PUT'
         || settings.type == 'DELETE') {
-      if (!(/^http:.*/.test(settings.url) || /^https:.*/
-        .test(settings.url))) {
-        // Only send the token to relative URLs i.e. locally.
-        xhr.setRequestHeader("X-XSRF-TOKEN",
+        if (!(/^http:.*/.test(settings.url) || /^https:.*/
+          .test(settings.url))) {
+          // Only send the token to relative URLs i.e. locally.
+          xhr.setRequestHeader("X-XSRF-TOKEN",
           Cookies.get('XSRF-TOKEN'));
         }
       }
     }
   });
+
   </script>
 </head>
 <body>
@@ -75,9 +68,15 @@
             You are logged in as: <span id="user"></span>
             <br/>
             <br/>
-            <button style="text-align:center" onClick="logout()" class="btn
-              btn-primary">Logout
-            </button>
+            <div>
+              <form th:action="@{/logout}" method="post">
+                <input type="hidden" name="${_csrf.parameterName}"
+                       value="${_csrf.token}"/>
+                <button style="text-align:center" type="submit"
+                        class="btn btn-primary">Logout
+                </button>
+              </form>
+            </div>
           </div>
           <div class="container text-danger error"></div>
         </div>

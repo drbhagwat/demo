@@ -29,6 +29,9 @@ public class AddressController {
   private static final String UPDATE_ADDRESS = "address/update-address";
   private static final String ADD_ADDRESS = "address/add-address";
   private static final String DELETE_ADDRESS = "address/delete-address";
+  private static final String ADDRESSES = "redirect:/addresses/";
+  private static final String IS_PRIMARY = "isPrimary";
+  private static final String COMPANY_CODE = "companyCode";
 
   @GetMapping()
   public Address get(AddressKey addressKey) {
@@ -41,14 +44,14 @@ public class AddressController {
   }
 
   @GetMapping("/{companyCode}")
-  public String getAll(@PathVariable("companyCode") String companyCode,
+  public String getAll(@PathVariable(COMPANY_CODE) String companyCode,
                        Model model) throws Exception {
     Optional<Company> company = companyRepository.findById(companyCode);
 
     if (company.isEmpty()) {
       throw new Exception("Invalid Company Code " + companyCode);
     } else {
-      model.addAttribute("companyCode", companyCode);
+      model.addAttribute(COMPANY_CODE, companyCode);
       List<Address> addresses =
           addressRepository.findByCompany(company.get());
 
@@ -62,21 +65,20 @@ public class AddressController {
   }
 
   @GetMapping("/add/{companyCode}")
-  public String add(@PathVariable("companyCode") String companyCode,
+  public String add(@PathVariable(COMPANY_CODE) String companyCode,
                     Model model) {
-    Company existingCompany =
-        companyRepository.findById(companyCode)
+    companyRepository.findById(companyCode)
             .orElseThrow(() -> new IllegalArgumentException("Invalid " +
                 "Company Code" + companyCode));
     Address address = new Address();
-    model.addAttribute("companyCode", companyCode);
+    model.addAttribute(COMPANY_CODE, companyCode);
     model.addAttribute("address", address);
     return ADD_ADDRESS;
   }
 
   @Transactional
   @PostMapping("/add/{companyCode}")
-  public String add(@PathVariable("companyCode") String companyCode,
+  public String add(@PathVariable(COMPANY_CODE) String companyCode,
                     @ModelAttribute("address") @Valid Address address,
                     Errors errors) {
     if (errors.hasErrors()) {
@@ -90,11 +92,11 @@ public class AddressController {
 
     if (existingAddress == null) { // adding a new address
 
-      if (addressesinCompany.size() == 0) {
+      if (addressesinCompany.isEmpty()) {
         // there are no other addresses in the db
 
         if (!isCurrentAddressPrimary) {
-          errors.rejectValue("isPrimary", "isPrimary.missing");
+          errors.rejectValue(IS_PRIMARY, "isPrimary.missing");
           return ADD_ADDRESS;
         }
       } else { // there are other addresses in the db
@@ -109,7 +111,7 @@ public class AddressController {
         // this is the only address
 
         if (!isCurrentAddressPrimary) {
-          errors.rejectValue("isPrimary", "isPrimary.missing");
+          errors.rejectValue(IS_PRIMARY, "isPrimary.missing");
           return ADD_ADDRESS;
         }
       } else {
@@ -124,31 +126,30 @@ public class AddressController {
     }
     address.setCompany(company);
     addressRepository.save(address);
-    return "redirect:/addresses/" + companyCode;
+    return ADDRESSES + companyCode;
   }
 
   @GetMapping("/update/{companyCode}/{addressKey}")
-  public String update(@PathVariable("companyCode") String companyCode,
+  public String update(@PathVariable(COMPANY_CODE) String companyCode,
                        @PathVariable("addressKey") AddressKey addressKey,
                        Model model) {
-    Company existingCompany =
-        companyRepository.findById(companyCode)
-            .orElseThrow(() -> new IllegalArgumentException("Invalid " +
-                "Company Code" + companyCode));
+    companyRepository.findById(companyCode)
+        .orElseThrow(() -> new IllegalArgumentException("Invalid " +
+            "Company Code" + companyCode));
     Address existingAddress = addressRepository.findById(addressKey)
         .orElseThrow(() -> new IllegalArgumentException("Invalid address " +
             "key:" + addressKey));
     model.addAttribute("address", existingAddress);
-    model.addAttribute("companyCode", companyCode);
+    model.addAttribute(COMPANY_CODE, companyCode);
     return UPDATE_ADDRESS;
   }
 
   @Transactional
   @PostMapping("/update/{companyCode}/{addressKey}")
-  public String update(@PathVariable("companyCode") String companyCode,
+  public String update(@PathVariable(COMPANY_CODE) String companyCode,
                        @PathVariable("addressKey") AddressKey addressKey,
                        @ModelAttribute @Valid Address address,
-                       Errors errors) throws Exception {
+                       Errors errors) {
     if (errors.hasErrors()) {
       return UPDATE_ADDRESS;
     }
@@ -162,7 +163,7 @@ public class AddressController {
       // this is the only address
 
       if (!isCurrentAddressPrimary) {
-        errors.rejectValue("isPrimary", "isPrimary.missing");
+        errors.rejectValue(IS_PRIMARY, "isPrimary.missing");
         return UPDATE_ADDRESS;
       }
     } else {
@@ -177,12 +178,12 @@ public class AddressController {
     existingAddress.setIsPrimary(isCurrentAddressPrimary);
     existingAddress.setAddress2(address.getAddress2());
     addressRepository.save(existingAddress);
-    return "redirect:/addresses/" + companyCode;
+    return ADDRESSES + companyCode;
   }
 
   @Transactional
   @GetMapping("/delete/{companyCode}/{addressKey}")
-  public String delete(@PathVariable("companyCode") String companyCode,
+  public String delete(@PathVariable(COMPANY_CODE) String companyCode,
                        @PathVariable AddressKey addressKey) throws Exception {
     Address address = addressRepository.findById(addressKey)
         .orElseThrow(() -> new IllegalArgumentException("Invalid address " +
@@ -199,13 +200,13 @@ public class AddressController {
       addresses.remove(address);
 
       // if there are other addresses in db and none of them is primary
-      if (((addresses.size() == 0)) || isNoAddressPrimary(addresses)) {
+      if (addresses.isEmpty() || isNoAddressPrimary(addresses)) {
         // do not delete and display an appropriate message
         return DELETE_ADDRESS;
       }
     }
     addressRepository.delete(address);
-    return "redirect:/addresses/" + companyCode;
+    return ADDRESSES + companyCode;
   }
 
   private boolean isNoAddressPrimary(List<Address> addresses) {

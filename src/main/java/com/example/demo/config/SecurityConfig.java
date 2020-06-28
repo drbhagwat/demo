@@ -28,8 +28,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         )
         .oauth2Login()
         .and()
-        .logout(l -> l
-            .logoutSuccessUrl("/"))
+        .logout()
+        .logoutSuccessUrl("/")
+        .invalidateHttpSession(true)
+        .deleteCookies("JSESSIONID")
+        .and()
         .csrf(c -> c
             .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
         .oauth2Login(o -> o

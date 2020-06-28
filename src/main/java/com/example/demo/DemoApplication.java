@@ -14,16 +14,21 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.util.Collections;
 import java.util.Map;
 
 @SpringBootApplication
 @RestController
 public class DemoApplication {
+  private static final Logger LOGGER = LoggerFactory.getLogger(DemoApplication.class);
+
   @Bean
   public MessageSource messageSource() {
     ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
@@ -39,22 +44,34 @@ public class DemoApplication {
     return bean;
   }
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(DemoApplication.class);
-
   @GetMapping("/user")
   public Map<String, Object> user(@AuthenticationPrincipal OAuth2User principal) {
     String name = principal.getAttribute("name");
+
+    if (name == null) {
+      name = principal.getAttribute("login");
+    }
     return Collections.singletonMap("name", name);
   }
 
-  @GetMapping("/logout")
-  public String logout(HttpServletRequest request, HttpServletResponse response) {
-    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    if (auth != null) {
-      new SecurityContextLogoutHandler().logout(request, response, auth);
+  /*
+  @PostMapping("/logout")
+  public String logout() {
+    System.out.println("Came here");
+
+    SecurityContextHolder.clearContext();
+    HttpSession session  = request.getSession(false);
+
+    if(session != null) {
+      session.invalidate();
+    }
+    for(Cookie cookie : request.getCookies()) {
+      cookie.setMaxAge(0);
     }
     return "redirect:/login?logout";
   }
+*/
+
 
   @GetMapping("/authenticationError")
   public String authenticationError(HttpServletRequest request) {

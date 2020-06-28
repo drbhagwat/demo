@@ -22,7 +22,7 @@ public class CustomLogoutSuccessHandler extends
       HttpServletResponse response,
       Authentication authentication)
       throws IOException, ServletException {
-
+    
     String refererUrl = request.getHeader("Referer");
     LOGGER.info("Logout from: {}", refererUrl);
     super.onLogoutSuccess(request, response, authentication);

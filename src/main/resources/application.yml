@@ -21,7 +21,7 @@ spring:
   server:
     servlet:
       sesssion:
-        timeout: 60m
+        timeout: 1m
     port: 8080
     error:
       whitelabel:

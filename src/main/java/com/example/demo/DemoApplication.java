@@ -7,20 +7,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.util.Collections;
 import java.util.Map;
 
@@ -53,25 +46,6 @@ public class DemoApplication {
     }
     return Collections.singletonMap("name", name);
   }
-
-  /*
-  @PostMapping("/logout")
-  public String logout() {
-    System.out.println("Came here");
-
-    SecurityContextHolder.clearContext();
-    HttpSession session  = request.getSession(false);
-
-    if(session != null) {
-      session.invalidate();
-    }
-    for(Cookie cookie : request.getCookies()) {
-      cookie.setMaxAge(0);
-    }
-    return "redirect:/login?logout";
-  }
-*/
-
 
   @GetMapping("/authenticationError")
   public String authenticationError(HttpServletRequest request) {

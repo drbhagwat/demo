@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 @Configuration
@@ -14,6 +15,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   @Bean
   public AuthenticationFailureHandler customAuthenticationFailureHandler() {
     return new CustomAuthenticationFailureHandler();
+  }
+
+  @Bean
+  public LogoutSuccessHandler logoutSuccessHandler() {
+    return new CustomLogoutSuccessHandler();
   }
 
   @Override
@@ -29,7 +35,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .oauth2Login()
         .and()
         .logout()
-        .logoutSuccessUrl("/")
+        .logoutSuccessHandler(logoutSuccessHandler())
         .invalidateHttpSession(true)
         .deleteCookies("JSESSIONID")
         .and()

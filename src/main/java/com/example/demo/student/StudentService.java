@@ -1,10 +1,12 @@
 package com.example.demo.student;
 
-import jakarta.transaction.TransactionScoped;
+import com.example.demo.exception.StudentEmailAlreadyTaken;
+import com.example.demo.exception.StudentNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -22,48 +24,57 @@ public class StudentService {
         return studentRepository.findAll();
     }
 
-    public void addStudent(Student student) {
+    public Student getStudent(Long id) {
+        return studentRepository.findById(id)
+                .orElseThrow(() -> new StudentNotFoundException(id));
+    }
 
-        Optional<Student> optionalStudent = studentRepository.findStudentByEmail(student.getEmail());
+    public void addStudent(Student student) {
+        final String email = student.getEmail();
+        Optional<Student> optionalStudent =
+                studentRepository.findStudentByEmail(email);
 
         if (optionalStudent.isPresent()) {
-            throw new IllegalStateException("Email " + student.getEmail() + " taken");
+            throw new StudentEmailAlreadyTaken(email);
         }
         studentRepository.save(student);
     }
 
     public void deleteStudent(Long id) {
-
         boolean exists = studentRepository.existsById(id);
 
         if (!exists) {
-            throw new IllegalStateException("Student with id " + id + " does not exist");
+            throw new StudentNotFoundException(id);
         }
         studentRepository.deleteById(id);
     }
 
     @Transactional
-    public void updateStudent(Long id, String name, String email) {
+    public void updateStudent(Long id, Student student) {
+        Student dbStudent = studentRepository.findById(id).orElseThrow(
+                () -> new StudentNotFoundException(id));
 
-        Student student = studentRepository.findById(id).orElseThrow(
-                () -> new IllegalStateException("Student with id " + id + " does not exist"));
+        String name = student.getName();
+        String email = student.getEmail();
+        LocalDate dob = student.getDob();
 
-        if (name != null &&
-                !name.isEmpty()
-                && !Objects.equals(student.getName(), name)) {
-            student.setName(name);
+        if (name != null && !name.isBlank()
+                && !Objects.equals(dbStudent.getName(), name)) {
+            dbStudent.setName(name);
         }
 
-        if (email != null &&
-                !email.isEmpty()
-                && !Objects.equals(student.getEmail(), email)) {
+        if (email != null && !email.isBlank()
+                && !Objects.equals(dbStudent.getEmail(), email)) {
             Optional<Student> optionalStudent = studentRepository.findStudentByEmail(email);
 
             if (optionalStudent.isPresent()) {
-                throw new IllegalStateException("Email " + student.getEmail() + " taken");
+                throw new StudentEmailAlreadyTaken(email);
             }
-            student.setEmail(email);
+            dbStudent.setEmail(email);
+        }
+
+        if (dob != null && !Objects.equals(dbStudent.getDob(), dob)) {
+            dbStudent.setDob(dob);
         }
     }
-
 }

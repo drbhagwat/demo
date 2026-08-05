@@ -16,11 +16,17 @@ public class Student {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
     private LocalDate dob;
 
     @Transient
     private Integer age;
+
+    @Column(nullable = false, unique = true)
     private String email;
 
    public Student(String name, LocalDate dob, String email) {

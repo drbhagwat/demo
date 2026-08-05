@@ -3,9 +3,8 @@ package com.example.demo.student;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
-
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @RestController
 @RequestMapping(path = "api/v1/students")
@@ -22,6 +21,11 @@ public class StudentController {
         return studentService.getStudents();
     }
 
+    @GetMapping(path = {"{studentId}"})
+    public Student getStudent(@PathVariable("studentId") Long id) {
+        return  studentService.getStudent(id);
+    }
+
     @PostMapping()
     public void addStudent(@RequestBody Student student) {
         studentService.addStudent(student);
@@ -34,9 +38,7 @@ public class StudentController {
 
     @PutMapping(path = {"{studentId}"})
     public void updateStudent(@PathVariable("studentId") Long id,
-                              @RequestParam(required = false) String name,
-                              @RequestParam(required = false) String email) {
-        studentService.updateStudent(id, name, email);
+                              @RequestBody Student student) {
+        studentService.updateStudent(id, student);
     }
-
 }

@@ -3,7 +3,6 @@ package com.example.demo.student;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -23,7 +22,7 @@ public class StudentController {
 
     @GetMapping(path = {"{studentId}"})
     public Student getStudent(@PathVariable("studentId") Long id) {
-        return  studentService.getStudent(id);
+        return studentService.getStudent(id);
     }
 
     @PostMapping()

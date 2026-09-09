@@ -1,9 +1,12 @@
-package com.example.demo.student;
+package com.example.demo.service;
 
 import com.example.demo.exception.StudentEmailAlreadyTaken;
 import com.example.demo.exception.StudentNotFoundException;
+import com.example.demo.model.Student;
+import com.example.demo.repo.StudentRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -31,13 +34,12 @@ public class StudentService {
 
     public void addStudent(Student student) {
         final String email = student.getEmail();
-        Optional<Student> optionalStudent =
-                studentRepository.findStudentByEmail(email);
 
-        if (optionalStudent.isPresent()) {
+        try {
+            studentRepository.saveAndFlush(student);
+        } catch (DataIntegrityViolationException e) {
             throw new StudentEmailAlreadyTaken(email);
         }
-        studentRepository.save(student);
     }
 
     public void deleteStudent(Long id) {

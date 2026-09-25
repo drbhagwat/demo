@@ -1,6 +1,6 @@
 package com.example.demo.config.security;
 
-import com.example.demo.config.JwtConfig;
+import com.example.demo.config.JwtProps;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -49,8 +49,8 @@ public class SecurityConfig {
   }
 
   @Bean
-  SecretKey secretKey(JwtConfig jwtConfig) {
-    return Keys.hmacShaKeyFor(jwtConfig.getSecretKey()
+  SecretKey secretKey(JwtProps jwtProps) {
+    return Keys.hmacShaKeyFor(jwtProps.getSecretKey()
         .getBytes(StandardCharsets.UTF_8));
   }
 }

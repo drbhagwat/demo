@@ -22,7 +22,9 @@ public class AuthController {
   @PostMapping("/register")
   public ResponseEntity<?> registerUser(@RequestBody RegisterRequest registerRequest) {
     appUserService.registerUser(registerRequest);
-    return ResponseEntity.status(HttpStatus.CREATED).build();
+    final var loginRequest = new LoginRequest(registerRequest.username(), registerRequest.password());
+    final var authResponse = authService.login(loginRequest);
+    return ResponseEntity.status(HttpStatus.CREATED).body(authResponse);
   }
 
   @PostMapping("/login")

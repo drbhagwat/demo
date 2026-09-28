@@ -1,7 +1,7 @@
 package com.example.demo.util;
 
-import io.jsonwebtoken.JwtBuilder;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
+import org.springframework.security.web.authentication.www.NonceExpiredException;
 
 import javax.crypto.SecretKey;
 import java.sql.Date;
@@ -42,5 +42,17 @@ public interface JwtUtils {
 
   static String generateRefreshToken(String username, SecretKey secretKey, long expirationTimeRefreshToken) {
     return generateToken(username, null, secretKey, expirationTimeRefreshToken, true);
+  }
+
+  static Claims parseToken(String s, SecretKey secretKey) {
+    final var jwTParser = Jwts.parser().verifyWith(secretKey).build();
+
+    try {
+      return jwTParser.parseClaimsJws(s).getPayload();
+    } catch (ExpiredJwtException e) {
+      throw new NonceExpiredException(e.getMessage());
+    } catch (JwtException | IllegalArgumentException e) {
+      throw new RuntimeException(e);
+    }
   }
 }

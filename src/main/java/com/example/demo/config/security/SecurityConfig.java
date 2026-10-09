@@ -38,9 +38,11 @@ public class SecurityConfig {
         .csrf(AbstractHttpConfigurer::disable)
         .sessionManagement(session ->
             session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .authorizeHttpRequests(http -> http
-            .requestMatchers("/api/v1/auth/**").permitAll()
-            .anyRequest().authenticated())
+        .authorizeHttpRequests(httpRequest ->
+            httpRequest
+                .requestMatchers("${app.api.v1}/auth/**")
+                .permitAll()
+                .anyRequest().authenticated())
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
         .exceptionHandling(e -> e.authenticationEntryPoint(authenticationEntryPoint));
     return httpSecurity.build();
@@ -49,8 +51,7 @@ public class SecurityConfig {
   @Bean
   AuthenticationManager authenticationManager(@Qualifier("daoAuthenticationProvider") AuthenticationProvider daoAuthenticationProvider, @Qualifier("bearerAuthProvider") BearerAuthProvider bearerAuthenticationProvider) {
     final List<AuthenticationProvider> authenticationProvider = List.of(daoAuthenticationProvider, bearerAuthenticationProvider);
-    final var providerManager = new ProviderManager(authenticationProvider);
-    return providerManager;
+    return new ProviderManager(authenticationProvider);
   }
 
   @Bean("daoAuthenticationProvider")
@@ -62,7 +63,6 @@ public class SecurityConfig {
 
   @Bean
   SecretKey secretKey(JwtProps jwtProps) {
-    return Keys.hmacShaKeyFor(jwtProps.getSecretKey()
-        .getBytes(StandardCharsets.UTF_8));
+    return Keys.hmacShaKeyFor(jwtProps.getSecretKey().getBytes(StandardCharsets.UTF_8));
   }
 }

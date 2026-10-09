@@ -5,8 +5,7 @@ import com.example.demo.exception.UserNameAlreadyExistsException;
 import com.example.demo.model.AppUser;
 import com.example.demo.repo.AppUserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -22,12 +21,11 @@ public class AppUserService implements UserDetailsService {
   private final AppUserRepository appUserRepository;
   private final PasswordEncoder passwordEncoder;
 
-  public ResponseEntity<?> registerUser(RegisterRequest registerRequest) {
+  public void registerUser(RegisterRequest registerRequest) {
     String username = registerRequest.username();
+    boolean userExists = appUserRepository.existsByUsername(username);
 
-    boolean exists = appUserRepository.existsByUsername(username);
-
-    if (exists) {
+    if (userExists) {
       throw new UserNameAlreadyExistsException(username);
     }
 
@@ -39,11 +37,11 @@ public class AppUserService implements UserDetailsService {
         .build();
 
     appUserRepository.save(newAppUser);
-    return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 
   @Override
-  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+  @NonNull
+  public UserDetails loadUserByUsername(@NonNull String username) throws UsernameNotFoundException {
     return appUserRepository.findByUsername(username)
         .orElseThrow(() -> new UsernameNotFoundException("User " + username + " not found"));
   }

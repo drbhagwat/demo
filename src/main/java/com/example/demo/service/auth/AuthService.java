@@ -29,11 +29,10 @@ public class AuthService {
   public AuthResponse login(LoginRequest loginRequest) {
     final var unauthenticatedToken = UsernamePasswordAuthenticationToken.unauthenticated(loginRequest.username(), loginRequest.password());
     final var authenticatedToken = authenticationManager.authenticate(unauthenticatedToken);
-    final var username = (authenticatedToken.getPrincipal() instanceof AppUser appUser) ?
-        appUser.getUsername() : "";
-    final List<?> roles = (authenticatedToken.getPrincipal() instanceof AppUser appUser) ?
+    final Object principal = authenticatedToken.getPrincipal();
+    final var username = (principal instanceof AppUser appUser) ? appUser.getUsername() : "";
+    final List<?> roles = (principal instanceof AppUser appUser) ?
         appUser.getRoles() : Collections.emptyList();
-
     final var expirationTimeAccessToken = jwtProps.getExpirationTimeAccessToken();
     final var accessToken = JwtUtils.generateAccessToken(username, roles, secretKey, expirationTimeAccessToken);
     final var expirationTimeRefreshToken = jwtProps.getExpirationTimeRefreshToken();

@@ -36,7 +36,6 @@ public interface JwtUtils {
         .add("roles", isRefreshToken ? Collections.emptyList() : roles)
         .build();
 
-
     return builder.claims(claims).signWith(secretKey).compact();
   }
 
@@ -48,7 +47,7 @@ public interface JwtUtils {
     final var jwTParser = Jwts.parser().verifyWith(secretKey).build();
 
     try {
-      return jwTParser.parseClaimsJws(s).getPayload();
+      return jwTParser.parseSignedClaims(s).getPayload();
     } catch (ExpiredJwtException e) {
       throw new NonceExpiredException(e.getMessage());
     } catch (JwtException | IllegalArgumentException e) {

@@ -1,11 +1,8 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.jspecify.annotations.Nullable;
+import jakarta.validation.constraints.NotBlank;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,6 +12,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
+
+/*
+ * AppUser is the applicationUser model class that represents a user in the application.
+ */
 @Data
 @Builder
 @AllArgsConstructor
@@ -23,35 +24,45 @@ import java.util.UUID;
 public class AppUser implements UserDetails  {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
-  private UUID id;
+  private UUID id; // Universal identifier for the user
 
-  private String fullName;
+  @NotBlank(message = "Full name is required")
+  @Column(nullable = false)
+  private String fullName; // full name of the user
 
-  @Column(unique = true)
-  private String username; // this represents the email
+  @NotBlank(message = "Username is required")
+  @Column(unique = true, nullable = false)
+  private String username; // email of the user and hence unique
 
-  private String password;
+  @NotBlank(message = "Password is required")
+  @Column(nullable = false)
+  private String password; // password of the user
 
-  private List<String> roles;
+  @NonNull
+  private List<String> roles; // a user can have multiple roles
 
-  private Instant createdAt;
+  @Column(nullable = false, updatable = false)
+  private Instant createdAt; // timestamp of when the user was created in the application
 
+  @NonNull
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     return roles.stream().map(SimpleGrantedAuthority::new).toList();
   }
 
   @Override
-  public @Nullable String getPassword() {
+  public String getPassword() {
     return password;
   }
 
+  @NonNull
   @Override
   public String getUsername() {
     return username;
   }
 
   public enum UserRoles {
-    ROLE_USER;
+    ROLE_USER,
+    ROLE_ADMIN;
   }
 }

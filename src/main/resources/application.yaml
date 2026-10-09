@@ -21,3 +21,7 @@ jwt:
   secret-key: t6NfprqeGSdUz505m1/37ReKvlIlHGyoVziS/SF6SJwLoKqZDsKxRfnNj0XatQSdokIl2M6FTzI+zbJeihdRxQ==
   expiration-time-access-token : 600
   expiration-time-refresh-token : 3600
+app:
+  api:
+    v1: /api/v1
+

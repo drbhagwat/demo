@@ -23,7 +23,7 @@ public class BearerAuthProvider implements AuthenticationProvider {
   public @Nullable Authentication authenticate(@Nullable Authentication authentication) throws AuthenticationException {
     final var claims = JwtUtils.parseToken((authentication instanceof BearerAuthToken authToken) ? (String) authToken.getCredentials(): "", secretKey);
     final var username = claims.getSubject();
-    List<String> authorityNames = claims.get("authorities", List.class);
+    List<String> authorityNames = claims.get("roles", List.class);
     List<GrantedAuthority> authorities = authorityNames.stream()
         .map(name -> (GrantedAuthority) new SimpleGrantedAuthority(name))
         .toList();

@@ -8,7 +8,7 @@ import com.example.demo.model.AppUser;
 import com.example.demo.model.Student;
 import com.example.demo.repo.StudentRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,24 +21,18 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class StudentService {
   private final PasswordEncoder passwordEncoder;
   private final StudentRepository studentRepository;
 
-  @Autowired
-  public StudentService(PasswordEncoder passwordEncoder, StudentRepository studentRepository) {
-    this.passwordEncoder = passwordEncoder;
-    this.studentRepository = studentRepository;
-  }
-
-  public void register(RegisterStudentRequest registerStudentRequest) {
+  public void registerStudent(RegisterStudentRequest registerStudentRequest) {
     String username = registerStudentRequest.username();
     Optional<Student> student = studentRepository.findByAppUser_Username(username);
 
     if (student.isPresent()) {
       throw new UserNameAlreadyExistsException(username);
     }
-
     var apUser = AppUser.builder()
         .username(username)
         .password(passwordEncoder.encode(registerStudentRequest.password()))
@@ -48,18 +42,19 @@ public class StudentService {
 
     var newStudent = Student.builder()
         .appUser(apUser)
+        .dob(registerStudentRequest.dob())
+        .fullName(registerStudentRequest.fullName())
         .build();
-
     studentRepository.save(newStudent);
   }
-
 
   public List<Student> getStudents() {
     return studentRepository.findAll();
   }
 
   public Student getStudent(UUID id) {
-    return studentRepository.findById(id)
+    return studentRepository
+        .findById(id)
         .orElseThrow(() -> new StudentNotFoundException(id));
   }
 
@@ -83,31 +78,43 @@ public class StudentService {
   }
 
   @Transactional
-  public void updateStudent(UUID id, Student student) {
+  public void updateStudent(UUID id, RegisterStudentRequest registerStudentRequest) {
     Student dbStudent = studentRepository.findById(id).orElseThrow(
         () -> new StudentNotFoundException(id));
 
-    AppUser appUser = dbStudent.getAppUser();
-    String email = appUser.getUsername();
-    LocalDate dob = student.getDob();
+    AppUser dbAppUser = dbStudent.getAppUser();
+    String dbEmail = dbAppUser.getUsername();
+    String dbFullName = dbStudent.getFullName();
+    LocalDate dbDob = dbStudent.getDob();
 
-    if (email != null && !email.isBlank()
-        && !Objects.equals(dbStudent.getAppUser().getUsername(), appUser)) {
-      appUser.setUsername(email);
-    }
+    String newPassword = registerStudentRequest.password();
+    LocalDate dob = registerStudentRequest.dob();
+    String newEmail = registerStudentRequest.username();
+    String fullName = registerStudentRequest.fullName();
 
-    if (email != null && !email.isBlank()
-        && !Objects.equals(appUser.getUsername(), email)) {
-      Optional<Student> optionalStudent = studentRepository.findByAppUser_Username(email);
+    if (newEmail != null &&
+        !newEmail.isBlank() &&
+        !Objects.equals(dbEmail, newEmail)) {
+      Optional<Student> optionalStudent = studentRepository.findByAppUser_Username(newEmail);
 
       if (optionalStudent.isPresent()) {
-        throw new StudentEmailAlreadyTaken(email);
+        throw new StudentEmailAlreadyTaken(newEmail);
       }
-      appUser.setUsername(email);
+      dbAppUser.setUsername(newEmail);
     }
 
-    if (dob != null && !Objects.equals(dbStudent.getDob(), dob)) {
+    if (dob != null && !Objects.equals(dbDob, dob)) {
       dbStudent.setDob(dob);
+    }
+
+    if (fullName != null &&
+        !fullName.isBlank() &&
+        !Objects.equals(dbFullName, fullName)) {
+      dbStudent.setFullName(registerStudentRequest.fullName());
+    }
+
+    if (newPassword != null && !newPassword.isBlank()) {
+      dbAppUser.setPassword(passwordEncoder.encode(newPassword));
     }
   }
 }

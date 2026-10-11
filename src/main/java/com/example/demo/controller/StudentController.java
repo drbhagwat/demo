@@ -23,7 +23,7 @@ public class StudentController {
 
   @PostMapping("/register")
   public AuthResponse register(@RequestBody @Valid RegisterStudentRequest registerStudentRequest) {
-    studentService.register(registerStudentRequest);
+    studentService.registerStudent(registerStudentRequest);
     final var loginRequest = new LoginRequest(registerStudentRequest.username(), registerStudentRequest.password());
     return authService.login(loginRequest);
   }
@@ -56,7 +56,7 @@ public class StudentController {
 
   @PutMapping(path = {"{studentId}"})
   public void updateStudent(@PathVariable("studentId") UUID id,
-                            @RequestBody Student student) {
-    studentService.updateStudent(id, student);
+                            @RequestBody @Valid RegisterStudentRequest registerStudentRequest) {
+    studentService.updateStudent(id, registerStudentRequest);
   }
 }

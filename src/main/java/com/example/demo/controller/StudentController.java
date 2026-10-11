@@ -1,20 +1,37 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.AuthResponse;
+import com.example.demo.dto.LoginRequest;
+import com.example.demo.dto.RegisterStudentRequest;
 import com.example.demo.model.Student;
 import com.example.demo.service.StudentService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.demo.service.auth.AuthService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
-@RequestMapping(path = "api/v1/students")
+@RequestMapping(path = "${app.api.v1}/students")
+@RequiredArgsConstructor
 public class StudentController {
   private final StudentService studentService;
+  private final AuthService authService;
 
-  @Autowired
-  public StudentController(StudentService studentService) {
-    this.studentService = studentService;
+  @PostMapping("/register")
+  public AuthResponse register(@RequestBody @Valid RegisterStudentRequest registerStudentRequest) {
+    studentService.register(registerStudentRequest);
+    final var loginRequest = new LoginRequest(registerStudentRequest.username(), registerStudentRequest.password());
+    return authService.login(loginRequest);
+  }
+
+  @PostMapping("/login")
+  public ResponseEntity<?> login(@RequestBody @Valid LoginRequest loginRequest) {
+    var authResponse = authService.login(loginRequest);
+    return ResponseEntity.ok(authResponse);
   }
 
   @GetMapping()
@@ -23,7 +40,7 @@ public class StudentController {
   }
 
   @GetMapping(path = {"{studentId}"})
-  public Student getStudent(@PathVariable("studentId") Long id) {
+  public Student getStudent(@PathVariable("studentId") UUID id) {
     return studentService.getStudent(id);
   }
 
@@ -33,12 +50,12 @@ public class StudentController {
   }
 
   @DeleteMapping(path = {"{studentId}"})
-  public void deleteStudent(@PathVariable("studentId") Long id) {
+  public void deleteStudent(@PathVariable("studentId") UUID id) {
     studentService.deleteStudent(id);
   }
 
   @PutMapping(path = {"{studentId}"})
-  public void updateStudent(@PathVariable("studentId") Long id,
+  public void updateStudent(@PathVariable("studentId") UUID id,
                             @RequestBody Student student) {
     studentService.updateStudent(id, student);
   }

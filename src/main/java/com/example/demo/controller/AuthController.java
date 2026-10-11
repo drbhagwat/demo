@@ -2,7 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.AuthResponse;
 import com.example.demo.dto.LoginRequest;
-import com.example.demo.dto.RegisterRequest;
+import com.example.demo.dto.RegisterAdminRequest;
 import com.example.demo.service.AppUserService;
 import com.example.demo.service.auth.AuthService;
 import jakarta.validation.Valid;
@@ -21,9 +21,9 @@ public class AuthController {
   private final AuthService authService;
 
   @PostMapping("/register")
-  public AuthResponse registerUser(@RequestBody @Valid RegisterRequest registerRequest) {
-    appUserService.registerUser(registerRequest);
-    final var loginRequest = new LoginRequest(registerRequest.username(), registerRequest.password());
+  public AuthResponse register(@RequestBody @Valid RegisterAdminRequest registerAdminRequest) {
+    appUserService.register(registerAdminRequest);
+    final var loginRequest = new LoginRequest(registerAdminRequest.username(), registerAdminRequest.password());
     return authService.login(loginRequest);
   }
 

@@ -8,15 +8,16 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
-
 /*
  * AppUser is the applicationUser model class that represents a user in the application.
  */
-@Data
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -26,10 +27,6 @@ public class AppUser implements UserDetails  {
   @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id; // Universal identifier for the user
 
-  @NotBlank(message = "Full name is required")
-  @Column(nullable = false)
-  private String fullName; // full name of the user
-
   @NotBlank(message = "Username is required")
   @Column(unique = true, nullable = false)
   private String username; // email of the user and hence unique
@@ -38,8 +35,17 @@ public class AppUser implements UserDetails  {
   @Column(nullable = false)
   private String password; // password of the user
 
-  @NonNull
-  private List<String> roles; // a user can have multiple roles
+  @ElementCollection(fetch = FetchType.EAGER)
+  @CollectionTable(
+      name = "user_roles",
+      joinColumns = @JoinColumn(name = "user_id"),
+      uniqueConstraints = @UniqueConstraint(
+          columnNames = {"user_id", "role"}
+      )
+  )
+  @Column(name = "role", nullable = false)
+  @Builder.Default
+  private List<String> roles = new ArrayList<>();
 
   @Column(nullable = false, updatable = false)
   private Instant createdAt; // timestamp of when the user was created in the application
@@ -62,7 +68,20 @@ public class AppUser implements UserDetails  {
   }
 
   public enum UserRoles {
-    ROLE_USER,
+    ROLE_STUDENT,
     ROLE_ADMIN;
+  }
+
+  @PrePersist
+  protected void onCreate() {
+    if (createdAt == null) {
+      createdAt = Instant.now();
+    }
+  }
+
+  public AppUser(String username, String password) {
+    this.username = username;
+    this.password = password;
+    this.roles = List.of(UserRoles.ROLE_ADMIN.name());
   }
 }

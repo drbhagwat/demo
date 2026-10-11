@@ -1,7 +1,9 @@
 package com.example.demo.exception;
 
+import java.util.UUID;
+
 public class StudentNotFoundException extends RuntimeException {
-  public StudentNotFoundException(Long id) {
-    super("Student with id " + id + " is not found");
+  public StudentNotFoundException(UUID id) {
+    super("Student with id " + id.toString() + " is not found");
   }
 }

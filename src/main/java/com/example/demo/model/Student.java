@@ -1,41 +1,36 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 
 import java.time.LocalDate;
-import java.time.Period;
+import java.util.UUID;
 
-@Data
-@NoArgsConstructor
+@Getter
+@Setter
+@Builder
 @AllArgsConstructor
+@NoArgsConstructor
 @Entity
 public class Student {
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private long id;
+  private UUID id;
 
+  @OneToOne(optional = false)
+  @MapsId
+  @JoinColumn(name = "id")
+  private AppUser appUser;
+
+  @NotBlank(message = "Full name is required")
   @Column(nullable = false)
-  private String name;
+  private String fullName;
 
+  @NotNull(message = "Date of birth is required")
   @Column(nullable = false)
   private LocalDate dob;
 
   @Transient
   private Integer age;
-
-  @Column(nullable = false, unique = true)
-  private String email;
-
-  public Student(String name, LocalDate dob, String email) {
-    this.name = name;
-    this.dob = dob;
-    this.email = email;
-  }
-
-  public Integer getAge() {
-    return (Period.between(this.dob, LocalDate.now()).getYears());
-  }
 }

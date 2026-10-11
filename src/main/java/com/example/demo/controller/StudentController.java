@@ -28,12 +28,6 @@ public class StudentController {
     return authService.login(loginRequest);
   }
 
-  @PostMapping("/login")
-  public ResponseEntity<?> login(@RequestBody @Valid LoginRequest loginRequest) {
-    var authResponse = authService.login(loginRequest);
-    return ResponseEntity.ok(authResponse);
-  }
-
   @GetMapping()
   public List<Student> getStudents() {
     return studentService.getStudents();
@@ -42,11 +36,6 @@ public class StudentController {
   @GetMapping(path = {"{studentId}"})
   public Student getStudent(@PathVariable("studentId") UUID id) {
     return studentService.getStudent(id);
-  }
-
-  @PostMapping()
-  public void addStudent(@RequestBody Student student) {
-    studentService.addStudent(student);
   }
 
   @DeleteMapping(path = {"{studentId}"})

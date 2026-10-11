@@ -29,10 +29,14 @@ public class AuthService {
   public AuthResponse login(LoginRequest loginRequest) {
     final var unauthenticatedToken = UsernamePasswordAuthenticationToken.unauthenticated(loginRequest.username(), loginRequest.password());
     final var authenticatedToken = authenticationManager.authenticate(unauthenticatedToken);
-    final Object principal = authenticatedToken.getPrincipal();
-    final var username = (principal instanceof AppUser appUser) ? appUser.getUsername() : "";
-    final List<?> roles = (principal instanceof AppUser appUser) ?
-        appUser.getRoles() : Collections.emptyList();
+
+    if (!(authenticatedToken.getPrincipal() instanceof AppUser appUser)) {
+      throw new IllegalStateException(
+          "Authenticated principal is not an AppUser"
+      );
+    }
+    String username = appUser.getUsername();
+    List<String> roles = appUser.getRoles();
     final var expirationTimeAccessToken = jwtProps.getExpirationTimeAccessToken();
     final var accessToken = JwtUtils.generateAccessToken(username, roles, secretKey, expirationTimeAccessToken);
     final var expirationTimeRefreshToken = jwtProps.getExpirationTimeRefreshToken();
@@ -41,6 +45,8 @@ public class AuthService {
         .id(Base64.getEncoder().encodeToString(username.getBytes(StandardCharsets.UTF_8)))
         .token(refreshToken).
         expirationTime(expirationTimeRefreshToken).build());
-    return new AuthResponse(accessToken, refreshToken,"Bearer", expirationTimeAccessToken);
+    return new AuthResponse(accessToken, refreshToken, "Bearer", expirationTimeAccessToken);
   }
 }
+
+

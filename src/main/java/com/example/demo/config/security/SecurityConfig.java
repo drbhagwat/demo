@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
@@ -44,7 +45,10 @@ public class SecurityConfig {
             session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(httpRequest ->
             httpRequest
-                .requestMatchers(apiV1 + "/auth/**", "/api/v1/students/register")
+                .requestMatchers(HttpMethod.POST,
+                    apiV1 + "/auth/login",
+                    apiV1 + "/students/register",
+                    apiV1 + "/students/login")
                 .permitAll()
                 .anyRequest().authenticated())
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

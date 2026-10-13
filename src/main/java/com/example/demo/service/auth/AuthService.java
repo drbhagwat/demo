@@ -87,7 +87,7 @@ public class AuthService {
     if (passwordEncoder.matches(newPassword, dbPassword)) {
       throw new IllegalArgumentException("New password must differ from current password");
     }
-    dbAppUser.setPassword(passwordEncoder.encode(changePasswordRequest.newPassword()));
+    dbAppUser.setPassword(passwordEncoder.encode(newPassword));
   }
 }
 

@@ -4,6 +4,6 @@ import java.util.UUID;
 
 public class AppUserNotFoundException extends RuntimeException {
   public AppUserNotFoundException(UUID id) {
-    super("Admin with id " + id.toString() + " is not found");
+    super("User with id " + id.toString() + " is not found");
   }
 }

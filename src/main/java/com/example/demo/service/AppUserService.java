@@ -1,9 +1,13 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.RegisterAdminRequest;
+import com.example.demo.exception.AppUserNotFoundException;
+import com.example.demo.exception.StudentEmailAlreadyTaken;
+import com.example.demo.exception.UserEmailAlreadyTaken;
 import com.example.demo.exception.UserNameAlreadyExistsException;
 import com.example.demo.model.AppUser;
 import com.example.demo.repo.AppUserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,7 +18,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +43,62 @@ public class AppUserService implements UserDetailsService {
         .build();
 
     appUserRepository.save(appUser);
+  }
+
+  public List<AppUser> getUsers() {
+    return appUserRepository.findAll();
+  }
+
+  public AppUser getUser(UUID id) {
+    return appUserRepository.findById(id).orElseThrow(() -> new AppUserNotFoundException(id));
+  }
+
+  @Transactional
+  public void updateUser(UUID id, RegisterAdminRequest registerAdminRequest) {
+    AppUser dbAppUser = appUserRepository.findById(id).orElseThrow(
+        () -> new AppUserNotFoundException(id));
+
+    String dbEmail = dbAppUser.getUsername();
+    String newEmail = registerAdminRequest.username();
+    String newPassword = registerAdminRequest.password();
+
+    if (newEmail != null &&
+        !newEmail.isBlank() &&
+        !Objects.equals(dbEmail, newEmail)) {
+      Optional<AppUser> optionalUser = appUserRepository.findByUsername(newEmail);
+
+      if (optionalUser.isPresent()) {
+        throw new UserEmailAlreadyTaken(newEmail);
+      }
+      dbAppUser.setUsername(newEmail);
+    }
+
+    if (newPassword != null && !newPassword.isBlank()) {
+      if (!passwordEncoder.matches(newPassword, dbAppUser.getPassword())) {
+        dbAppUser.setPassword(passwordEncoder.encode(newPassword));
+      }
+    }
+  }
+
+  @Transactional
+  public void deleteUser(UUID id) {
+    AppUser appUser = appUserRepository.findById(id)
+        .orElseThrow(() -> new AppUserNotFoundException(id));
+
+    boolean isAdmin = appUser.getRoles()
+        .contains(AppUser.UserRoles.ROLE_ADMIN.toString());
+
+    if (isAdmin) {
+      long adminCount =
+          appUserRepository.countUsersByRole("ROLE_ADMIN");
+
+      if (adminCount <= 1) {
+        throw new IllegalStateException(
+            "Cannot delete the last admin"
+        );
+      }
+    }
+    appUserRepository.delete(appUser);
   }
 
   @Override

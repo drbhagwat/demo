@@ -7,7 +7,6 @@ import com.example.demo.service.auth.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -26,8 +25,6 @@ public class AuthController {
   @PatchMapping("/change-password")
   public ResponseEntity<?> changePassword(@RequestBody @Valid ChangePasswordRequest changePasswordRequest) {
     authService.changePassword(changePasswordRequest);
-    return ResponseEntity.ok(
-        Map.of("message", "Password changed successfully")
-    );
+    return ResponseEntity.ok(Map.of("message", "Password changed successfully"));
   }
 }

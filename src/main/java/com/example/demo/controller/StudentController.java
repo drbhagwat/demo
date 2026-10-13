@@ -8,7 +8,6 @@ import com.example.demo.service.StudentService;
 import com.example.demo.service.auth.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,26 +23,25 @@ public class StudentController {
   @PostMapping("/register")
   public AuthResponse register(@RequestBody @Valid RegisterStudentRequest registerStudentRequest) {
     studentService.registerStudent(registerStudentRequest);
-    final var loginRequest = new LoginRequest(registerStudentRequest.username(), registerStudentRequest.password());
-    return authService.login(loginRequest);
+    return authService.login(new LoginRequest(registerStudentRequest.username(), registerStudentRequest.password()));
   }
 
-  @GetMapping()
+  @GetMapping
   public List<Student> getStudents() {
     return studentService.getStudents();
   }
 
-  @GetMapping(path = {"{studentId}"})
+  @GetMapping("/{studentId}")
   public Student getStudent(@PathVariable("studentId") UUID id) {
     return studentService.getStudent(id);
   }
 
-  @DeleteMapping(path = {"{studentId}"})
+  @DeleteMapping("/{studentId}")
   public void deleteStudent(@PathVariable("studentId") UUID id) {
     studentService.deleteStudent(id);
   }
 
-  @PutMapping(path = {"{studentId}"})
+  @PutMapping("/{studentId}")
   public void updateStudent(@PathVariable("studentId") UUID id,
                             @RequestBody @Valid RegisterStudentRequest registerStudentRequest) {
     studentService.updateStudent(id, registerStudentRequest);

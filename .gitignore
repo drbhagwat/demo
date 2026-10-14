@@ -1,3 +1,7 @@
+# React / Vite
+ui/node_modules/
+ui/dist/
+
 ### Spring Boot ###
 HELP.md
 
@@ -20,6 +24,7 @@ logs/
 .DS_Store
 Thumbs.db
 
-### Environment files (optional) ###
+### Environment files ###
 .env
 .env.*
+!.env.example

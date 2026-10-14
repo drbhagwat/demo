@@ -5,7 +5,9 @@ import com.example.demo.model.AppUser;
 import com.example.demo.service.AppUserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,6 +18,14 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AppUserController {
   private final AppUserService appUserService;
+
+  @PostMapping("/admins")
+  @PreAuthorize("hasRole('ADMIN')")
+  public ResponseEntity<?> registerAdmin(
+      @RequestBody @Valid RegisterAdminRequest request) {
+    AppUser admin = appUserService.registerAdmin(request);
+    return ResponseEntity.status(HttpStatus.CREATED).body(admin);
+  }
 
   @GetMapping
   public List<AppUser> getUsers() {

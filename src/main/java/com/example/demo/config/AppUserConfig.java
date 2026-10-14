@@ -2,11 +2,13 @@ package com.example.demo.config;
 
 import com.example.demo.model.AppUser;
 import com.example.demo.repo.AppUserRepository;
-import com.example.demo.repo.StudentRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.time.Instant;
+import java.util.List;
 
 @Configuration
 public class AppUserConfig {
@@ -19,10 +21,21 @@ public class AppUserConfig {
   }
 
   @Bean
-  CommandLineRunner commandLineRunner(StudentRepository studentRepository) {
+  CommandLineRunner commandLineRunner() {
     return args -> {
-      AppUser admin = new AppUser("dinesh.bhagwat@gmail.com", passwordEncoder.encode("Bha!625822544"));
-      appUserRepository.save(admin);
+      String username = "dinesh.bhagwat@gmail.com";
+
+      if (appUserRepository.findByUsername(username).isEmpty()) {
+        AppUser admin = AppUser.builder()
+            .username(username)
+            .password(passwordEncoder.encode(System.getenv("DEFAULT_ADMIN_PASSWORD")))
+            .createdAt(Instant.now())
+            .roles(List.of(
+                AppUser.UserRoles.ROLE_ADMIN.toString()))
+            .build();
+
+        appUserRepository.save(admin);
+      }
     };
   }
 }

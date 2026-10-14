@@ -1,7 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.RegisterStudentRequest;
-import com.example.demo.exception.StudentEmailAlreadyTaken;
+import com.example.demo.exception.EmailAlreadyTaken;
 import com.example.demo.exception.StudentNotFoundException;
 import com.example.demo.exception.UserNameAlreadyExistsException;
 import com.example.demo.model.AppUser;
@@ -64,7 +64,7 @@ public class StudentService {
     try {
       studentRepository.saveAndFlush(student);
     } catch (DataIntegrityViolationException e) {
-      throw new StudentEmailAlreadyTaken(email);
+      throw new EmailAlreadyTaken(email);
     }
   }
 
@@ -98,7 +98,7 @@ public class StudentService {
       Optional<Student> optionalStudent = studentRepository.findByAppUser_Username(newEmail);
 
       if (optionalStudent.isPresent()) {
-        throw new StudentEmailAlreadyTaken(newEmail);
+        throw new EmailAlreadyTaken(newEmail);
       }
       dbAppUser.setUsername(newEmail);
     }

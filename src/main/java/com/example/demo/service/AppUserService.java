@@ -1,9 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.RegisterAdminRequest;
-import com.example.demo.exception.AppUserNotFoundException;
-import com.example.demo.exception.StudentEmailAlreadyTaken;
-import com.example.demo.exception.UserEmailAlreadyTaken;
+import com.example.demo.exception.EmailAlreadyTaken;
 import com.example.demo.exception.UserNameAlreadyExistsException;
 import com.example.demo.model.AppUser;
 import com.example.demo.repo.AppUserRepository;
@@ -28,7 +26,7 @@ public class AppUserService implements UserDetailsService {
   private final PasswordEncoder passwordEncoder;
   private final AppUserRepository appUserRepository;
 
-  public void register(RegisterAdminRequest registerAdminRequest) {
+  public AppUser registerAdmin(RegisterAdminRequest registerAdminRequest) {
     String username = registerAdminRequest.username();
     Optional<AppUser> dbAppUser = appUserRepository.findByUsername(username);
 
@@ -41,8 +39,7 @@ public class AppUserService implements UserDetailsService {
         .createdAt(Instant.now())
         .roles(List.of(AppUser.UserRoles.ROLE_ADMIN.toString()))
         .build();
-
-    appUserRepository.save(appUser);
+    return(appUserRepository.save(appUser));
   }
 
   public List<AppUser> getUsers() {
@@ -50,13 +47,14 @@ public class AppUserService implements UserDetailsService {
   }
 
   public AppUser getUser(UUID id) {
-    return appUserRepository.findById(id).orElseThrow(() -> new AppUserNotFoundException(id));
+    return appUserRepository.findById(id).orElseThrow(()
+        -> new UsernameNotFoundException("User with id " + id + " not found"));
   }
 
   @Transactional
   public void updateUser(UUID id, RegisterAdminRequest registerAdminRequest) {
     AppUser dbAppUser = appUserRepository.findById(id).orElseThrow(
-        () -> new AppUserNotFoundException(id));
+        () -> new UsernameNotFoundException("User with id " + id + " not found"));
 
     String dbEmail = dbAppUser.getUsername();
     String newEmail = registerAdminRequest.username();
@@ -68,7 +66,7 @@ public class AppUserService implements UserDetailsService {
       Optional<AppUser> optionalUser = appUserRepository.findByUsername(newEmail);
 
       if (optionalUser.isPresent()) {
-        throw new UserEmailAlreadyTaken(newEmail);
+        throw new EmailAlreadyTaken(newEmail);
       }
       dbAppUser.setUsername(newEmail);
     }
@@ -83,7 +81,7 @@ public class AppUserService implements UserDetailsService {
   @Transactional
   public void deleteUser(UUID id) {
     AppUser appUser = appUserRepository.findById(id)
-        .orElseThrow(() -> new AppUserNotFoundException(id));
+        .orElseThrow(() -> new UsernameNotFoundException("User with id " + id + " not found"));
 
     boolean isAdmin = appUser.getRoles()
         .contains(AppUser.UserRoles.ROLE_ADMIN.toString());

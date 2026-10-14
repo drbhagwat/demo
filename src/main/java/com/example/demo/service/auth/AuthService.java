@@ -75,7 +75,7 @@ public class AuthService {
     String currentUserName = authentication.getName();
 
     AppUser dbAppUser = appUserRepository.findByUsername(currentUserName)
-        .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        .orElseThrow(() -> new UsernameNotFoundException("User " + currentUserName + " not found"));
     String dbPassword = dbAppUser.getPassword();
 
     if (!passwordEncoder.matches(

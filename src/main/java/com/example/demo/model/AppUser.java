@@ -78,10 +78,4 @@ public class AppUser implements UserDetails  {
       createdAt = Instant.now();
     }
   }
-
-  public AppUser(String username, String password) {
-    this.username = username;
-    this.password = password;
-    this.roles = List.of(UserRoles.ROLE_ADMIN.name());
-  }
 }

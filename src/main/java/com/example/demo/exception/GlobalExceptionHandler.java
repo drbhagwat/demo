@@ -11,31 +11,30 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.time.Instant;
 import java.util.Objects;
 
-
 @RestControllerAdvice
 public class GlobalExceptionHandler {
   @ExceptionHandler(UserNameAlreadyExistsException.class)
-  public ResponseEntity<?> handleException(UserNameAlreadyExistsException ex) {
+  public ResponseEntity<ApiResponse> handleUserNameAlreadyExists(UserNameAlreadyExistsException ex) {
     final var status = HttpStatus.CONFLICT.value();
     final var message = ex.getMessage();
+    return ResponseEntity.status(status).body(generateApiResponse(status, message));
+  }
 
-    return ResponseEntity
-        .status(status)
-        .body(generateApiResponse(status, message));
+  @ExceptionHandler(LastAdminCannotBeDeletedException.class)
+  public ResponseEntity<ApiResponse> handleLastAdminDeletion(LastAdminCannotBeDeletedException ex) {
+    final var status = HttpStatus.CONFLICT.value();
+    return ResponseEntity.status(status).body(generateApiResponse(status, ex.getMessage()));
   }
 
   @ExceptionHandler(Exception.class)
-  public ResponseEntity<?> handleException(Exception ex) {
+  public ResponseEntity<ApiResponse> handleException(Exception ex) {
     final var status = HttpStatus.INTERNAL_SERVER_ERROR.value();
     final var message = ex.getMessage();
-
-    return ResponseEntity
-        .status(status)
-        .body(generateApiResponse(status, message));
+    return ResponseEntity.status(status).body(generateApiResponse(status, message));
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
-  public ResponseEntity<?> handleException(MethodArgumentNotValidException ex) {
+  public ResponseEntity<ApiResponse> handleInvalidMethodArguments(MethodArgumentNotValidException ex) {
     final String message = ex.getBindingResult()
         .getFieldErrors()
         .stream()
@@ -43,10 +42,9 @@ public class GlobalExceptionHandler {
         .filter(Objects::nonNull)
         .findFirst()
         .orElse("Validation failed");
-    final var status = HttpStatus.INTERNAL_SERVER_ERROR.value();
+    final var status = HttpStatus.BAD_REQUEST.value();
 
-    return ResponseEntity
-        .status(status)
+    return ResponseEntity.status(status)
         .body(generateApiResponse(status, message));
   }
 

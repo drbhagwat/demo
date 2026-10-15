@@ -39,7 +39,8 @@ public class SecurityConfig {
   SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity,
                                           JwtAuthenticationFilter jwtAuthenticationFilter,
                                           AuthenticationEntryPoint authenticationEntryPoint) {
-    httpSecurity
+
+    httpSecurity.cors(cors -> {})
         .csrf(AbstractHttpConfigurer::disable)
         .sessionManagement(session ->
             session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

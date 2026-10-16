@@ -9,7 +9,7 @@ import java.util.Collection;
 public class BearerAuthToken extends AbstractAuthenticationToken {
   public static final String BEARER_AUTHENTICATION = "Bearer";
   private final String username;
-  private final String creentials;
+  private final String credentials;
 
   private BearerAuthToken(@Nullable Collection<? extends GrantedAuthority> authorities,
                           String username,
@@ -17,7 +17,7 @@ public class BearerAuthToken extends AbstractAuthenticationToken {
                           boolean isAuthenticated) {
     super(authorities);
     this.username = username;
-    this.creentials = credentials;
+    this.credentials = credentials;
     this.setAuthenticated(isAuthenticated);
   }
 
@@ -31,7 +31,7 @@ public class BearerAuthToken extends AbstractAuthenticationToken {
 
   @Override
   public @Nullable Object getCredentials() {
-    return creentials;
+    return credentials;
   }
 
   @Override

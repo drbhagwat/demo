@@ -1,57 +1,146 @@
 package com.example.demo.util;
 
-import io.jsonwebtoken.*;
-import org.springframework.security.web.authentication.www.NonceExpiredException;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 
 import javax.crypto.SecretKey;
 import java.sql.Date;
 import java.time.Instant;
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
-public interface JwtUtils {
-  static String generateAccessToken(String username,
-                                    List<?> roles,
-                                    SecretKey secretKey,
-                                    long expirationTimeAccessToken) {
-    return generateToken(username, roles, secretKey, expirationTimeAccessToken, false);
+public final class JwtUtils {
+  public static final String TOKEN_TYPE_CLAIM = "token_type";
+  public static final String ACCESS_TOKEN = "access";
+  public static final String REFRESH_TOKEN = "refresh";
+  public static final String ROLES_CLAIM = "roles";
+
+  private static final Set<String> ALLOWED_ROLES =
+      Set.of("ROLE_ADMIN", "ROLE_STUDENT");
+
+  private JwtUtils() {
+    // Utility class; prevent instantiation.
   }
 
+  public static String generateAccessToken(
+      String username,
+      List<String> roles,
+      SecretKey secretKey,
+      long expirationTimeSeconds) {
 
-  private static String generateToken(String username,
-                                      List<?> roles,
-                                      SecretKey secretKey,
-                                      long expirationTime,
-                                      boolean isRefreshToken) {
-    final var builder = Jwts.builder();
-    final var now = Instant.now();
-    final var expiration = now.plusSeconds(expirationTime);
+    if (roles == null || roles.isEmpty()) {
+      throw new IllegalArgumentException(
+          "Access token roles must not be empty");
+    }
 
-    final var claims = Jwts
-        .claims().subject(username)
+    return generateToken(
+        username,
+        roles,
+        secretKey,
+        expirationTimeSeconds,
+        ACCESS_TOKEN);
+  }
+
+  public static String generateRefreshToken(
+      String username,
+      SecretKey secretKey,
+      long expirationTimeSeconds) {
+
+    return generateToken(
+        username,
+        null,
+        secretKey,
+        expirationTimeSeconds,
+        REFRESH_TOKEN);
+  }
+
+  private static String generateToken(
+      String username,
+      List<String> roles,
+      SecretKey secretKey,
+      long expirationTimeSeconds,
+      String tokenType) {
+
+    if (username == null || username.isBlank()) {
+      throw new IllegalArgumentException(
+          "Username must not be blank");
+    }
+
+    if (secretKey == null) {
+      throw new IllegalArgumentException(
+          "Secret key must not be null");
+    }
+
+    if (expirationTimeSeconds <= 0) {
+      throw new IllegalArgumentException(
+          "Expiration must be positive");
+    }
+
+    if (!ACCESS_TOKEN.equals(tokenType)
+        && !REFRESH_TOKEN.equals(tokenType)) {
+      throw new IllegalArgumentException(
+          "Invalid token type");
+    }
+
+    if (ACCESS_TOKEN.equals(tokenType)) {
+      if (roles == null || roles.isEmpty()) {
+        throw new IllegalArgumentException(
+            "Access token roles must not be empty");
+      }
+
+      if (roles.stream().anyMatch(
+          role -> role == null || role.isBlank())) {
+        throw new IllegalArgumentException(
+            "Roles must not contain null or blank values");
+      }
+
+      if (!ALLOWED_ROLES.containsAll(roles)) {
+        throw new IllegalArgumentException(
+            "Roles contain an unsupported value");
+      }
+
+      if (Set.copyOf(roles).size() != roles.size()) {
+        throw new IllegalArgumentException(
+            "Roles must not contain duplicates");
+      }
+    }
+
+    Instant now = Instant.now();
+    Instant expiration = now.plusSeconds(expirationTimeSeconds);
+
+    var builder = Jwts.builder()
+        .subject(username)
         .id(UUID.randomUUID().toString())
         .issuedAt(Date.from(now))
         .expiration(Date.from(expiration))
-        .add("roles", isRefreshToken ? Collections.emptyList() : roles)
-        .build();
+        .claim(TOKEN_TYPE_CLAIM, tokenType);
 
-    return builder.claims(claims).signWith(secretKey).compact();
-  }
-
-  static String generateRefreshToken(String username, SecretKey secretKey, long expirationTimeRefreshToken) {
-    return generateToken(username, null, secretKey, expirationTimeRefreshToken, true);
-  }
-
-  static Claims parseToken(String s, SecretKey secretKey) {
-    final var jwTParser = Jwts.parser().verifyWith(secretKey).build();
-
-    try {
-      return jwTParser.parseSignedClaims(s).getPayload();
-    } catch (ExpiredJwtException e) {
-      throw new NonceExpiredException(e.getMessage());
-    } catch (JwtException | IllegalArgumentException e) {
-      throw new RuntimeException(e);
+    if (ACCESS_TOKEN.equals(tokenType)) {
+      builder.claim(ROLES_CLAIM, roles);
     }
+
+    return builder.signWith(secretKey).compact();
+  }
+
+  public static Claims parseToken(
+      String token,
+      SecretKey secretKey) {
+
+    if (token == null || token.isBlank()) {
+      throw new IllegalArgumentException(
+          "JWT must not be blank");
+    }
+
+    if (secretKey == null) {
+      throw new IllegalArgumentException(
+          "Secret key must not be null");
+    }
+
+    return Jwts.parser()
+        .verifyWith(secretKey)
+        .build()
+        .parseSignedClaims(token)
+        .getPayload();
   }
 }

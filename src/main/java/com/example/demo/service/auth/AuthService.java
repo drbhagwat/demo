@@ -58,7 +58,6 @@ public class AuthService {
         .id(Base64.getEncoder().encodeToString(username.getBytes(StandardCharsets.UTF_8)))
         .token(refreshToken).
         expirationTime(expirationTimeRefreshToken).build());
-
     return new AuthResponse(accessToken, refreshToken, "Bearer", expirationTimeAccessToken);
   }
 

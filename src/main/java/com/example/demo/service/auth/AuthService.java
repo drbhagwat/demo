@@ -22,6 +22,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -43,7 +44,6 @@ public class AuthService {
   private final RefreshTokenRepository refreshTokenRepository;
   private final AppUserRepository appUserRepository;
   private final PasswordEncoder passwordEncoder;
-
 
   public AuthResponse login(LoginRequest loginRequest) {
     final var unauthenticatedToken = UsernamePasswordAuthenticationToken.unauthenticated(loginRequest.username(), loginRequest.password());
@@ -81,10 +81,10 @@ public class AuthService {
 
   public AuthResponse refreshToken(TokenRefreshRequest request) {
     // Check refresh token belongs to same user as access token or not.
-    final var claims = JwtUtils.getClaimsFromToken(request.accessToken(), secretKey);
+    final var claims = JwtUtils.parseAccessToken(request.accessToken(), secretKey);
     final var username = claims.get(Claims.SUBJECT, String.class);
 
-    final var refreshTokenUsername = JwtUtils.getClaimsFromToken(request.refreshToken(), secretKey)
+    final var refreshTokenUsername = JwtUtils.parseRefreshToken(request.refreshToken(), secretKey)
         .get(Claims.SUBJECT, String.class);
 
     if (!username.equals(refreshTokenUsername)) {
@@ -112,17 +112,13 @@ public class AuthService {
     if (username == null || username.isBlank()) {
       throw new BadCredentialsException("Authenticated username is missing");
     }
-    final List<String> roles = getAuthorities(authenticatedToken)
-        .stream()
-        .map(GrantedAuthority::getAuthority)
-        .toList();
 
+    // Extract user roles from authenticated token
+    final Collection<? extends GrantedAuthority> roles = getAuthorities(authenticatedToken);
     final var expirationTimeAccessToken = jwtProps.getExpirationTimeAccessToken();
     final var accessToken = JwtUtils.generateAccessToken(username, roles, secretKey, expirationTimeAccessToken);
-
     final var expirationTimeRefreshToken = jwtProps.getExpirationTimeRefreshToken();
     final var refreshToken = JwtUtils.generateRefreshToken(username, secretKey, expirationTimeRefreshToken);
-
     // Save refresh token --> Cache
     refreshTokenRepository.save(RefreshToken.builder()
         .id(Base64.getEncoder()
@@ -130,7 +126,6 @@ public class AuthService {
         .token(refreshToken)
         .expirationTime(expirationTimeRefreshToken)
         .build());
-
     return new AuthResponse(accessToken, refreshToken, "Bearer", expirationTimeAccessToken);
   }
 

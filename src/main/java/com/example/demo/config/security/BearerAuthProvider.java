@@ -39,7 +39,7 @@ public class BearerAuthProvider implements AuthenticationProvider {
     Claims claims;
 
     try {
-      claims = JwtUtils.parseToken(token, secretKey);
+      claims = JwtUtils.parseAccessToken(token, secretKey);
     } catch (JwtException | IllegalArgumentException e) {
       throw new BadCredentialsException("Invalid JWT", e);
     }

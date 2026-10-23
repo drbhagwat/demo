@@ -2,6 +2,7 @@ package com.example.demo.config.security;
 
 import com.example.demo.util.JwtUtils;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -39,8 +40,7 @@ public class BearerAuthProvider implements AuthenticationProvider {
 
     try {
       claims = JwtUtils.parseToken(token, secretKey);
-    } catch (io.jsonwebtoken.JwtException
-             | IllegalArgumentException e) {
+    } catch (JwtException | IllegalArgumentException e) {
       throw new BadCredentialsException("Invalid JWT", e);
     }
 

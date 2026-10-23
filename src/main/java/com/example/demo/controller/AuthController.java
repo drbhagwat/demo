@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.dto.AuthResponse;
 import com.example.demo.dto.ChangePasswordRequest;
 import com.example.demo.dto.LoginRequest;
+import com.example.demo.dto.TokenRefreshRequest;
 import com.example.demo.service.auth.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,4 +28,10 @@ public class AuthController {
     authService.changePassword(changePasswordRequest);
     return ResponseEntity.ok(Map.of("message", "Password changed successfully"));
   }
+
+  @PostMapping("/refresh")
+  public ResponseEntity<AuthResponse> refreshToken(@RequestBody @Valid TokenRefreshRequest tokenRefreshRequest) {
+    return ResponseEntity.ok(authService.refreshToken(tokenRefreshRequest));
+  }
+
 }

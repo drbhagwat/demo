@@ -1,11 +1,15 @@
 package com.example.demo.util;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.crypto.SecretKey;
 import java.sql.Date;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -142,5 +146,31 @@ public final class JwtUtils {
         .build()
         .parseSignedClaims(token)
         .getPayload();
+  }
+
+  public static Claims getClaimsFromToken(String s,
+                                   SecretKey secretKey) {
+    final var jwtParser = Jwts.parser()
+        .verifyWith(secretKey)
+        .build();
+    try {
+      return jwtParser.parseSignedClaims(s).getPayload();
+    } catch (ExpiredJwtException e) {
+      return e.getClaims();
+    } catch (JwtException | IllegalArgumentException e) {
+      throw new RuntimeException("Invalid token provider", e);
+    }
+  }
+
+  public static List<SimpleGrantedAuthority> extractAuthorities(Claims claims) {
+    final var roles = (claims.get("roles", List.class) instanceof List<?> list) ? list : Collections.emptyList();
+
+    if (roles.isEmpty()) {
+      return Collections.emptyList();
+    }
+
+    return roles.stream()
+        .map(role -> new SimpleGrantedAuthority((String) role))
+        .toList();
   }
 }

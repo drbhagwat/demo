@@ -49,7 +49,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST,
                     apiV1 + "/auth/login",
                     apiV1 + "/students/register",
-                    apiV1 + "/students/login")
+                    apiV1 + "/students/login", apiV1 + "/auth/refresh")
                 .permitAll()
                 .anyRequest().authenticated())
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

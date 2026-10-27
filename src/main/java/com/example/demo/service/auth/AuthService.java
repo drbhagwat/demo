@@ -158,10 +158,7 @@ public class AuthService {
         && !username.equals("anonymousUser")) {
       return username;
     }
-
-    throw new BadCredentialsException(
-        "Unsupported authentication principal"
-    );
+    throw new BadCredentialsException("Unsupported authentication principal");
   }
 }
 

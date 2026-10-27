@@ -36,22 +36,20 @@ public final class JwtUtils {
       long expirationTimeSeconds) {
 
     if (roles == null || roles.isEmpty()) {
-      throw new IllegalArgumentException(
-          "Access token roles must not be empty");
+      throw new IllegalArgumentException("Access token roles must not be empty");
     }
 
     List<String> roleNames = roles.stream()
         .map(authority -> {
+
           if (authority == null) {
             throw new IllegalArgumentException(
                 "Role must not be null");
           }
           return authority.getAuthority();
-        })
-        .toList();
+        }).toList();
 
     validateRoles(roleNames);
-
     return generateToken(
         username, secretKey, expirationTimeSeconds,
         ACCESS_TOKEN, roleNames);
@@ -122,14 +120,12 @@ public final class JwtUtils {
 
   public static Claims parseAccessToken(
       String token, SecretKey secretKey) {
-
     Claims claims = parseToken(token, secretKey);
 
     if (!ACCESS_TOKEN.equals(
         claims.get(TOKEN_TYPE_CLAIM, String.class))) {
       throw new JwtException("Expected an access token");
     }
-
     return claims;
   }
 
@@ -169,11 +165,8 @@ public final class JwtUtils {
     }
   }
 
-  public static List<SimpleGrantedAuthority> extractAuthorities(
-      Claims claims) {
-
+  public static List<SimpleGrantedAuthority> extractAuthorities(Claims claims) {
     Objects.requireNonNull(claims, "Claims must not be null");
-
     Object rolesClaim = claims.get(ROLES_CLAIM);
 
     if (!(rolesClaim instanceof List<?> roles)) {
